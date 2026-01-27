@@ -1,0 +1,299 @@
+@{
+    ViewData["Title"] = "Social Sanctuary - Feed";
+}
+
+<div class="relative">
+    <!-- Fixed Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="/images/community-bg.png" class="w-full h-full object-cover opacity-40 fixed blur-[10px]" alt="Background Network" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90"></div>
+    </div>
+
+    <!-- Instagram Style Feed Container -->
+    <div class="min-h-screen px-4 relative z-10">
+        
+        <!-- Header -->
+        <div class="max-w-[600px] mx-auto mb-6 text-center animate-fade-in">
+            <h1 class="text-3xl font-black tracking-tighter text-white uppercase italic">My <span class="text-[var(--primary-color)]">Feed</span></h1>
+            <p class="text-[var(--text-muted)] text-[10px] font-black tracking-[0.3em] uppercase mt-2">Collective Creativity in Real-Time</p>
+        </div>
+
+        <!-- The Feed Column -->
+        <div id="socialFeedContainer" class="max-w-[500px] mx-auto space-y-12">
+            <!-- Posts will be injected here -->
+        </div>
+
+        <!-- Empty & Loading States -->
+        <div id="emptySocialFeed" class="hidden text-center py-24 max-w-[500px] mx-auto glass rounded-[3rem] border border-white/5">
+            <i class="bi bi-images text-5xl text-[var(--text-muted)] mb-6 block"></i>
+            <h3 class="text-xl font-black text-white tracking-tighter mb-4 uppercase">The Sanctuary is Silent</h3>
+            <p class="text-[var(--text-secondary)] text-sm mb-8 px-10">Be the first to leave a mark in our digital vault.</p>
+            <a href="/AI" class="btn-premium inline-flex items-center gap-3 px-8 text-xs">
+                <i class="bi bi-magic"></i> CREATE MASTERPIECE
+            </a>
+        </div>
+
+        <div id="socialFeedLoading" class="flex flex-col items-center py-32 gap-6">
+            <div class="w-12 h-12 border-2 border-white/10 border-t-[var(--primary-color)] rounded-full animate-spin"></div>
+            <p id="loadingStatus" class="text-[var(--text-muted)] font-black tracking-widest uppercase text-[9px]">Fetching the collective soul...</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadSocialFeed() {
+            const container = document.getElementById('socialFeedContainer');
+            const loading = document.getElementById('socialFeedLoading');
+            const status = document.getElementById('loadingStatus');
+            const empty = document.getElementById('emptySocialFeed');
+
+            if (!container || !loading) return;
+
+            loading.classList.remove('hidden');
+            if (status) status.innerText = "Initializing Neural Link...";
+
+            try {
+                if (status) status.innerText = "Accessing the Vault...";
+                
+                // Set a timeout for the fetch
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                const response = await fetch('/Social/GetSocialFeed?_cb=' + Date.now(), { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (status) status.innerText = "Decoding Digital Echoes...";
+
+                if (!response.ok) throw new Error(`Transmission Lost: ${response.status}`);
+                
+                const posts = await response.json();
+
+                if (posts && posts.success === false) {
+                    throw new Error(posts.error || 'The Sanctuary is experiencing turbulence.');
+                }
+
+                const feedItems = Array.isArray(posts) ? posts : [];
+                loading.classList.add('hidden');
+                
+                if (feedItems.length > 0) {
+                    empty.classList.add('hidden');
+                    container.innerHTML = feedItems.map(post => {
+                        const likes = post.likesCount || 0;
+                        const comments = post.comments || [];
+                        const user = post.userName || 'Anonymous Artist';
+                        const avatar = post.userAvatar || '/images/default-avatar.png';
+                        const time = post.createdAt ? timeAgo(post.createdAt) : 'Ancient';
+
+                        return `
+                            <div class="glass overflow-hidden border border-white/5 rounded-[2.5rem] animate-fade-in shadow-2xl">
+                                <!-- User Info -->
+                                <div class="p-5 flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
+                                            <img src="${avatar}" class="w-full h-full object-cover rounded-full" onerror="this.src='/images/default-avatar.png'">
+                                            <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#02040a]"></div>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-black tracking-tighter text-xs uppercase">${user}</p>
+                                            <p class="text-[var(--text-muted)] text-[8px] font-bold uppercase tracking-widest">${time}</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative">
+                                        <button onclick="toggleFeedMenu(this)" class="text-[var(--text-muted)] hover:text-white transition-colors p-1">
+                                            <i class="bi bi-three-dots text-xl"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 top-full mt-2 w-32 bg-[#1a1c23] border border-white/10 rounded-xl shadow-xl z-20 overflow-hidden text-left">
+                                            ${post.canDelete ? `
+                                            <button onclick="deletePost(${post.id})" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-500/10 flex items-center gap-2 border-t border-white/5">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Post Content -->
+                                <div class="relative aspect-square bg-white/[0.02] overflow-hidden group cursor-pointer" onclick="handleLikeEffect(this, ${post.id})">
+                                    <img src="${post.imageUrl}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='/images/hero-main.png'">
+                                    <div class="like-overlay absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 transform scale-50">
+                                        <i class="bi bi-heart-fill text-white text-7xl drop-shadow-2xl"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Interactions -->
+                                <div class="p-6 pb-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-5">
+                                            <button onclick="likePost(${post.id}, this)" class="transform active:scale-125 transition-transform ${post.isLiked ? 'text-red-500' : 'text-white'}">
+                                                <i class="bi ${post.isLiked ? 'bi-heart-fill' : 'bi-heart'} text-2xl"></i>
+                                            </button>
+                                            <button class="text-white hover:text-[var(--primary-color)] transition-colors">
+                                                <i class="bi bi-chat-dots text-2xl"></i>
+                                            </button>
+
+                                        </div>
+                                        <button onclick="remixPost('${(post.caption || '').replace(/'/g, "\\'").replace(/"/g, "&quot;")}')" class="text-[var(--primary-color)] hover:scale-110 transition-transform">
+                                            <i class="bi bi-magic text-2xl"></i>
+                                        </button>
+                                    </div>
+
+                                    <p class="text-white text-[11px] font-black tracking-tight mb-2 uppercase italic">${likes.toLocaleString()} Enthusiasts</p>
+
+                                    <div class="flex gap-2 items-start mb-6">
+                                        <span class="text-white font-black text-xs uppercase italic tracking-tighter shrink-0">${user}</span>
+                                        <p class="text-[var(--text-secondary)] text-[11px] leading-relaxed line-clamp-2 hover:line-clamp-none transition-all">
+                                            ${post.caption || 'Echoes in the digital sanctuary...'}
+                                        </p>
+                                    </div>
+
+                                    <div class="space-y-4 mb-6 max-h-[150px] overflow-y-auto custom-scrollbar">
+                                        ${comments.length > 0 ? comments.map(c => `
+                                            <div class="flex gap-3 animate-fade-in items-start px-1">
+                                                <div class="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-white/5">
+                                                    <img src="${c.userAvatar || '/images/default-avatar.png'}" class="w-full h-full object-cover">
+                                                </div>
+                                                <div class="flex flex-col gap-0.5">
+                                                    <span class="text-white font-black text-[9px] uppercase tracking-tighter italic">${c.userName}</span>
+                                                    <p class="text-[var(--text-muted)] text-[10px] leading-tight">${c.content}</p>
+                                                </div>
+                                            </div>
+                                        `).join('') : '<p class="text-[9px] font-bold text-white/5 tracking-[0.2em] uppercase text-center py-2 italic font-serif italic">Hush... the vault is quiet.</p>'}
+                                    </div>
+
+                                    <div class="relative pt-4 border-t border-white/5 group/input">
+                                        <input type="text" placeholder="Add a transmission..." class="w-full bg-transparent text-[10px] font-bold tracking-widest uppercase text-white focus:outline-none placeholder:text-white/20">
+                                        <button onclick="addComment(${post.id}, this)" class="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--primary-color)] font-black text-[10px] tracking-widest uppercase hover:text-white transition-colors">Post</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    empty.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Feed error:', error);
+                loading.innerHTML = `
+                    <div class="text-center animate-fade-in">
+                        <i class="bi bi-exclamation-octagon text-red-500 text-3xl mb-4 block"></i>
+                        <p class="text-red-400 font-black uppercase text-[10px] tracking-widest">Neural Link Severed</p>
+                        <p class="text-slate-500 text-[9px] uppercase mt-2 italic">${error.name === 'AbortError' ? 'Transmission timed out' : error.message}</p>
+                        <button onclick="loadSocialFeed()" class="mt-8 btn-premium px-8 !text-[9px]">Re-Establish Link</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function handleLikeEffect(container, postId) {
+            const overlay = container.querySelector('.like-overlay');
+            overlay.classList.add('opacity-100', 'scale-100');
+            setTimeout(() => overlay.classList.remove('opacity-100', 'scale-100'), 800);
+            
+            const likeBtn = container.parentElement.querySelector('button[onclick^="likePost"]');
+            if (likeBtn && !likeBtn.classList.contains('text-red-500')) {
+                likePost(postId, likeBtn);
+            }
+        }
+
+        async function likePost(postId, btn) {
+            try {
+                const response = await fetch(`/Social/LikePost?postId=${postId}`, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    const icon = btn.querySelector('i');
+                    const enthusiasmDisplay = btn.closest('.p-6').querySelector('p.italic');
+                    let currentCount = parseInt(enthusiasmDisplay.textContent.replace(/,/g, ''));
+                    
+                    if (result.liked) {
+                        btn.classList.add('text-red-500');
+                        btn.classList.remove('text-white');
+                        icon.classList.replace('bi-heart', 'bi-heart-fill');
+                        enthusiasmDisplay.textContent = (currentCount + 1).toLocaleString() + ' Enthusiasts';
+                    } else {
+                        btn.classList.remove('text-red-500');
+                        btn.classList.add('text-white');
+                        icon.classList.replace('bi-heart-fill', 'bi-heart');
+                        enthusiasmDisplay.textContent = (currentCount - 1).toLocaleString() + ' Enthusiasts';
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function addComment(postId, btn) {
+            const input = btn.parentElement.querySelector('input');
+            const content = input.value.trim();
+            if (!content) return;
+            try {
+                btn.classList.add('opacity-30');
+                const response = await fetch('/Social/AddComment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ postId, content })
+                });
+                const res = await response.json();
+                if (res.success) {
+                    input.value = '';
+                    loadSocialFeed();
+                }
+            } finally { btn.classList.remove('opacity-30'); }
+        }
+
+        function timeAgo(date) {
+            const parsed = new Date(date);
+            if (isNaN(parsed)) return 'Unknown';
+            const seconds = Math.floor((new Date() - parsed) / 1000);
+            if (seconds < 60) return 'Just Now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
+            if (seconds < 84600) return Math.floor(seconds / 3600) + 'h';
+            return Math.floor(seconds / 86400) + 'd';
+        }
+
+        function shareArt(url, user) {
+            if (navigator.share) {
+                navigator.share({ title: `Art by ${user}`, url });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Sanctuary Link Copied');
+            }
+        }
+
+        function remixPost(prompt) {
+            if (!prompt) return;
+            sessionStorage.setItem('remix_prompt', prompt);
+            window.location.href = '/AI';
+        }
+
+        function toggleFeedMenu(btn) {
+            // Close other menus first
+            document.querySelectorAll('#socialFeedContainer .relative .absolute').forEach(el => {
+                if (el !== btn.nextElementSibling) el.classList.add('hidden');
+            });
+            btn.nextElementSibling.classList.toggle('hidden');
+        }
+
+        async function deletePost(postId) {
+            if (!confirm('Are you sure you want to delete this specific echo from the sanctuary?')) return;
+            try {
+                const response = await fetch('/Social/DeletePost?postId=' + postId, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    loadSocialFeed();
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        // Close feed post menus when clicking outside
+        document.addEventListener('click', function(e) {
+            // Only target the specific dropdowns within the feed
+            if (!e.target.closest('#socialFeedContainer .relative')) {
+                const feedMenus = document.querySelectorAll('#socialFeedContainer .relative .absolute');
+                feedMenus.forEach(el => el.classList.add('hidden'));
+            }
+        });
+
+        loadSocialFeed();
+    </script>
+}

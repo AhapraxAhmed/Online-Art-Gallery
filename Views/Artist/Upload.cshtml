@@ -1,0 +1,79 @@
+@model Project.Models.Product
+@{
+    ViewData["Title"] = "Upload New Art";
+    Layout = "_ArtistLayout";
+}
+
+<div class="max-w-3xl mx-auto px-2">
+    <div class="mb-8 md:mb-10 text-center md:text-left">
+        <h1 class="text-3xl md:text-4xl font-bold">New Creation</h1>
+        <p class="text-slate-500">Share your latest masterpiece with the world.</p>
+    </div>
+
+    <form asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-6 md:space-y-8 bg-[var(--bg-card)] p-6 md:p-10 rounded-[2rem] md:rounded-3xl border border-[var(--glass-border)]">
+        <div class="space-y-6">
+            
+            <div>
+                <label class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2 block">Artwork Title</label>
+                <input type="text" asp-for="Name" required class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-3 focus:border-primary outline-none text-[var(--text-primary)] transition-all" placeholder="e.g. Starry Reflection" />
+            </div>
+
+            
+            <div>
+                <label class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2 block">Description</label>
+                <textarea asp-for="Description" required rows="4" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-3 focus:border-primary outline-none text-[var(--text-primary)] transition-all resize-none" placeholder="The inspiration behind this piece..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div>
+                    <label class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2 block">Base Price ($)</label>
+                    <input type="number" asp-for="Price" required step="0.01" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-3 focus:border-primary outline-none text-[var(--text-primary)] transition-all" />
+                    <p class="text-[10px] text-slate-500 mt-2 italic">Note: A 10% platform fee will be deducted on sale.</p>
+                </div>
+
+                
+                <div>
+                    <label class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2 block">Sale Type</label>
+                    <select asp-for="IsAuction" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-3 focus:border-primary outline-none text-[var(--text-primary)] transition-all">
+                        <option value="false">Fixed Price</option>
+                        <option value="true">Auction</option>
+                    </select>
+                </div>
+            </div>
+
+            
+            <div>
+                <label class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2 block">High Resolution Image</label>
+                <div class="relative group">
+                    <input type="file" name="image" required accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)" />
+                    <div id="image-preview-container" class="w-full h-64 bg-[var(--bg-surface-1)] border-2 border-dashed border-[var(--glass-border)] rounded-2xl flex flex-col items-center justify-center transition-all group-hover:border-primary/50">
+                        <i class="bi bi-cloud-arrow-up text-4xl text-slate-600 mb-2"></i>
+                        <span class="text-sm text-slate-500">Drag and drop or click to upload</span>
+                        <img id="preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 pt-6">
+            <button type="submit" class="flex-[2] btn-premium py-4 text-lg font-bold">Submit for Approval</button>
+            <a asp-action="Index" class="flex-1 btn bg-white/5 border border-[var(--glass-border)] text-slate-400 py-4 rounded-xl hover:bg-white/10 transition-all font-bold text-center">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#preview').attr('src', e.target.result).removeClass('hidden');
+                    $('#image-preview-container i, #image-preview-container span').addClass('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

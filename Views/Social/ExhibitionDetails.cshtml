@@ -1,0 +1,80 @@
+@model Project.Models.Exhibition
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="relative">
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="@Model.ImageUrl" class="w-full h-full object-cover opacity-30 fixed blur-xl scale-125" alt="Background Blur" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black via-black/40 to-black"></div>
+    </div>
+
+    <div class="min-h-screen pt-40 pb-32 px-6 max-w-6xl mx-auto relative z-10">
+        
+        <!-- Breadcrumb -->
+        <div class="mb-12 animate-fade-in">
+            <a asp-action="Community" class="inline-flex items-center gap-2 text-xs font-black tracking-widest uppercase text-[var(--text-secondary)] hover:text-white transition-colors group">
+                <i class="bi bi-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                Back to Community
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            <!-- Left: Content -->
+            <div class="lg:col-span-7 space-y-12 animate-fade-in">
+                <div>
+                     <div class="inline-flex items-center gap-3 bg-[var(--primary-color)]/10 text-[var(--primary-color)] px-4 py-1 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border border-[var(--primary-color)]/20 mb-6">
+                        Upcoming Event
+                    </div>
+                    <h1 class="text-6xl font-black text-white tracking-tighter leading-none mb-6">@Model.Title</h1>
+                    <div class="flex flex-wrap gap-8 text-[var(--text-secondary)] font-medium">
+                        <div class="flex items-center gap-3">
+                            <i class="bi bi-calendar3 text-primary"></i>
+                            <span>@Model.Date.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-white">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <span>@Model.Address</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-10 bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] relative overflow-hidden group">
+                     <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px]"></div>
+                     <h3 class="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8">About the Exhibition</h3>
+                     <p class="text-xl text-slate-300 leading-relaxed font-light">
+                        @Model.Description
+                     </p>
+                </div>
+
+                <div class="pt-8 text-center lg:text-left">
+                    <p class="text-xs font-black uppercase tracking-[0.4em] text-[var(--primary-color)]">The sanctuary awaits your presence.</p>
+                </div>
+            </div>
+
+            <!-- Right: Map/Image -->
+            <div class="lg:col-span-5 space-y-8 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl aspect-[4/5]">
+                    <img src="@Model.ImageUrl" class="w-full h-full object-cover" />
+                </div>
+
+                <div class="glass p-8 bg-[#0a0a0a] rounded-[3rem] border-white/5 space-y-6">
+                    <h4 class="text-xs font-black uppercase tracking-[0.3em] text-white/40">Sanctuary Location</h4>
+                    <div class="rounded-2xl overflow-hidden border border-white/5 aspect-video shadow-2xl relative grayscale hover:grayscale-0 transition-all duration-700">
+                         <iframe 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0" 
+                            loading="lazy" 
+                            allowfullscreen 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&q=@Uri.EscapeDataString(Model.Address)">
+                        </iframe>
+                    </div>
+                    <p class="text-[10px] text-slate-500 text-center uppercase tracking-widest">Global access via our secure digital bridge.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

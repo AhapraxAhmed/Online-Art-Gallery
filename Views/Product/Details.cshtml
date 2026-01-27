@@ -1,0 +1,243 @@
+@model Project.Models.Product
+@{
+    ViewData["Title"] = Model.Name + " - Details";
+}
+
+<div class="pt-32 pb-20 px-6 max-w-7xl mx-auto animate-fade-in">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        
+        <div class="product-image-section">
+            <div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border border-[var(--glass-border)] relative group">
+                @if(!string.IsNullOrEmpty(Model.ImageUrl)) {
+                    <img src="@Model.ImageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                } else {
+                    <div class="w-full h-full bg-[var(--bg-surface-1)] flex items-center justify-center">
+                        <i class="bi bi-image text-6xl text-[var(--text-secondary)] opacity-20"></i>
+                    </div>
+                }
+                
+                @if (Context.Session.GetInt32("UserId") != null)
+                {
+                    <button onclick="toggleWish(@Model.Id)" id="wishBtn" class="absolute top-4 right-4 w-12 h-12 rounded-full glass flex items-center justify-center text-[var(--text-secondary)] hover:text-red-500 hover:bg-white/10 transition-all cursor-pointer shadow-xl">
+                        <i class="bi bi-heart-fill"></i>
+                    </button>
+                }
+            </div>
+        </div>
+
+        
+        <div class="product-details-section">
+            <div class="glass p-8 md:p-12 mb-8">
+                 <div class="flex items-center gap-2 mb-4">
+                     @if(Model.IsAuction) {
+                         <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-xs font-bold uppercase tracking-wider">Live Auction</span>
+                     } else {
+                         <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-bold uppercase tracking-wider">Fixed Price</span>
+                     }
+                 </div>
+
+                 <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight text-[var(--text-primary)]">@Model.Name</h1>
+                 <p class="text-[var(--text-secondary)] text-lg leading-relaxed mb-8">@Model.Description</p>
+
+                 
+                 <div class="bg-[var(--bg-surface-1)]/50 rounded-2xl p-6 border border-[var(--glass-border)] mb-8">
+                     @if(Model.IsAuction) {
+                         
+                         <div class="flex justify-between items-end mb-6">
+                             <div>
+                                 <p class="text-[var(--text-secondary)] text-sm font-bold uppercase tracking-wider mb-1">Current Bid</p>
+                                 <div class="text-3xl font-black text-[var(--text-primary)]">
+                                     $@(Model.CurrentBid ?? Model.Price)
+                                 </div>
+                                 <p class="text-[var(--text-secondary)] text-xs mt-1">@Model.BidCount Bids placed</p>
+                                 
+                                 @if(ViewBag.HighestBidder != null) {
+                                     var bidder = (Project.Models.User)ViewBag.HighestBidder;
+                                     <div class="flex items-center gap-2 mt-2 p-2 bg-[var(--bg-surface-1)] rounded-lg border border-[var(--glass-border)] inline-flex">
+                                         <div class="w-6 h-6 rounded-full overflow-hidden bg-slate-700">
+                                             @if(!string.IsNullOrEmpty(bidder.Avatar)) {
+                                                 <img src="@bidder.Avatar" class="w-full h-full object-cover" />
+                                             } else {
+                                                  <div class="w-full h-full flex items-center justify-center text-[8px] font-bold text-white bg-primary">
+                                                      @bidder.Name[0]
+                                                  </div>
+                                             }
+                                         </div>
+                                         <span class="text-xs font-bold text-[var(--text-primary)]">Last bid by @bidder.Name</span>
+                                     </div>
+                                 }
+                             </div>
+                             <div class="text-end">
+                                  <p class="text-[var(--text-secondary)] text-sm font-bold uppercase tracking-wider mb-1">Auction Ends</p>
+                                  <div class="text-xl font-mono font-bold text-amber-500">
+                                      @(Model.AuctionEndTime?.ToString("MMM dd, HH:mm") ?? "Open")
+                                  </div>
+                             </div>
+                         </div>
+                         
+                         
+                        <div id="biddingArea">
+                            @if (Context.Session.GetInt32("UserId") != null)
+                            {
+                                if (Context.Session.GetInt32("UserId") == Model.HighestBidderId)
+                                {
+                                    <div class="p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-center">
+                                        <div class="flex items-center justify-center gap-2 mb-1">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span class="font-bold text-sm uppercase tracking-wider">Winning Bid</span>
+                                        </div>
+                                        <p class="text-xs">You are currently the highest bidder for this piece.</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    var minBid = (Model.CurrentBid ?? Model.Price) + 1;
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4">
+                                            <div class="relative flex-1">
+                                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] font-bold">$</span>
+                                                <input type="number" id="bidAmount" min="@minBid" value="@minBid" step="1" 
+                                                       class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl pl-8 pr-4 py-4 text-white font-bold outline-none focus:border-primary transition-all" />
+                                            </div>
+                                            <button onclick="placeBid(@Model.Id)" class="btn-premium px-8 py-4 shadow-xl shadow-primary/20 hover:scale-105 transition-transform">
+                                                Place Bid
+                                            </button>
+                                        </div>
+                                        <p class="text-xs text-[var(--text-secondary)] text-center">Minimum bid: $@minBid</p>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                 <div class="text-center p-4 border border-dashed border-[var(--glass-border)] rounded-xl">
+                                     <p class="text-[var(--text-secondary)] mb-2">Please login to participate in this auction.</p>
+                                     <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="text-primary font-bold hover:underline">Login Now</a>
+                                 </div>
+                             }
+                         </div>
+                     } else {
+                         
+                         <div class="flex justify-between items-center mb-6">
+                             <div>
+                                 <p class="text-[var(--text-secondary)] text-sm font-bold uppercase tracking-wider mb-1">Price</p>
+                                 <div class="text-4xl font-black text-primary">$@Model.Price</div>
+                             </div>
+                         </div>
+                         
+                         <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn-premium w-full py-4 text-center text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform">
+                             Add to Cart
+                         </a>
+                     }
+                 </div>
+
+            </div>
+        </div>
+    </div>
+
+    @* Reviews Section - Full Width *@
+    <div class="mt-16 pt-12 border-t border-[var(--glass-border)] w-full">
+        <h2 class="text-3xl font-bold text-[var(--text-primary)] mb-8">Collector Reviews</h2>
+        
+        @if (Context.Session.GetInt32("UserId") != null)
+        {
+            <div class="bg-[var(--bg-surface-1)] rounded-[32px] p-8 border border-[var(--glass-border)] mb-12">
+                <h4 class="font-bold text-lg mb-6">Write a Review</h4>
+                <form asp-action="PostReview" method="post" class="space-y-6">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <div>
+                        <label class="text-xs text-slate-500 uppercase font-black mb-3 block">Rating</label>
+                        <div class="flex gap-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <label class="rating-btn">
+                                    <input type="radio" name="rating" value="@i" required class="hidden" />
+                                    <span class="w-12 h-12 rounded-xl border border-[var(--glass-border)] flex items-center justify-center text-xl cursor-pointer hover:bg-primary/10 transition-all font-black text-[var(--text-secondary)]">@i</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 uppercase font-black mb-3 block">Your Words</label>
+                        <textarea name="comment" required rows="3" class="w-full bg-[var(--bg-surface-2)] border border-[var(--glass-border)] rounded-2xl p-4 outline-none focus:border-primary text-[var(--text-primary)]" placeholder="Share your experience with this masterpiece..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-premium px-10 py-3 rounded-xl font-bold">Post Review</button>
+                </form>
+            </div>
+        }
+
+        <div class="space-y-8">
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                @foreach (var r in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+                {
+                    <div class="flex gap-6 pb-8 border-b border-[var(--glass-border)]">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                            @r.User.Name[0]
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h5 class="font-bold text-[var(--text-primary)]">@r.User.Name</h5>
+                                    <div class="flex text-amber-500 text-xs mt-1">
+                                        @for (int i = 0; i < r.Rating; i++) { <i class="bi bi-star-fill mr-1"></i> }
+                                    </div>
+                                </div>
+                                <span class="text-xs text-slate-500">@r.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <p class="text-[var(--text-secondary)] leading-relaxed italic">"@r.Comment"</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-[var(--text-secondary)] text-center py-12">No reviews yet. Be the first to share your thoughts!</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleWish(productId) {
+            $.post('/Gallery/ToggleWishlist', { productId: productId }, function(res) {
+                if(res.success) {
+                    if(res.added) {
+                        $('#wishBtn').removeClass('text-[var(--text-secondary)]').addClass('text-red-500');
+                    } else {
+                        $('#wishBtn').removeClass('text-red-500').addClass('text-[var(--text-secondary)]');
+                    }
+                } else if(res.message === "Please login first.") {
+                    window.location.href = '/Auth/Login';
+                }
+            });
+        }
+
+        function placeBid(productId) {
+            const amount = document.getElementById('bidAmount').value;
+            
+            fetch('/Product/PlaceBid', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `productId=${productId}&amount=${amount}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Bid placed successfully!');
+                    window.location.reload();
+                } else {
+                    if (data.message === 'NO_CARD') {
+
+                        if(confirm('A valid payment method is required to place a bid. Go to Settings > Payment to add one?')) {
+                             window.location.href = data.redirectUrl;
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            })
+            .catch(err => console.error(err));
+        }
+    </script>
+}

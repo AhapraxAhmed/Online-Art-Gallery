@@ -1,0 +1,322 @@
+@{
+    ViewData["Title"] = "Our Legacy - Art Gallery";
+}
+
+<div class="relative">
+    <!-- Fixed Background Layer -->
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="/images/about-bg.png" class="w-full h-full object-cover opacity-60 fixed" alt="Background Texture" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
+    </div>
+
+    <div class="px-6 max-w-7xl mx-auto relative z-10">
+        
+        <!-- Hero Section -->
+        <section class="section-padding mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                <div class="animate-fade-in">
+                    <div class="flex items-center gap-4 mb-8">
+                        <span class="w-12 h-[1px] bg-[var(--primary-color)]"></span>
+                        <span class="text-[var(--primary-color)] font-bold tracking-[0.3em] uppercase text-[10px]">The Sanctuary Legacy</span>
+                    </div>
+                    <h1 class="premium-title mb-10">
+                        WHERE ART<br/>
+                        <span class="text-gradient">TRANSCENDS </span><br/>
+                        TIME.
+                    </h1>
+                    <div class="space-y-6">
+                        <p class="text-[var(--text-secondary)] text-xl leading-relaxed max-w-xl">
+                            Established in 2025, our sanctuary was conceived as a bridge between the visceral touch of traditional masterpieces and the boundless potential of the digital frontier.
+                        </p>
+                        <p class="text-[var(--text-muted)] text-lg leading-relaxed max-w-xl">
+                            We curate more than just images; we curate experiences. Every piece in our gallery is a chapter of a larger soul-story, hand-picked through a rigorous process of aesthetic and emotional validation.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-12 flex items-center gap-8">
+                        <div class="flex -space-x-4">
+                            <img src="https://i.pravatar.cc/150?u=1" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                            <img src="https://i.pravatar.cc/150?u=2" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                            <img src="https://i.pravatar.cc/150?u=3" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                        </div>
+                        <p class="text-xs font-bold text-[var(--text-secondary)] tracking-widest uppercase">Trusted by 500+ global artists</p>
+                    </div>
+                </div>
+
+                <div class="relative animate-fade-in group" style="animation-delay: 0.2s;">
+                    <div class="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative">
+                        <img src="/images/about-feature.png" class="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110" alt="Gallery Interior" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    
+                    <!-- Floating Stat Badge -->
+                    <div class="absolute -bottom-10 -right-10 p-10 glass rounded-[2.5rem] shadow-2xl animate-bounce-slow">
+                        <h4 class="text-4xl font-black text-white mb-1">12K+</h4>
+                        <p class="text-[10px] font-bold text-[var(--primary-color)] tracking-widest uppercase">Masterpieces Sold</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-4 border border-white/5 p-16 rounded-[4rem] bg-white/[0.02]">
+
+            <div class="text-center group">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">12K+</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Curated Artworks</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">500+</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Maestro Artists</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">99%</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Client Devotion</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">24/7</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Concierge Service</div>
+            </div>
+        </section>
+        <section id="team" class="section-padding py-2 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6">
+
+                <div class="text-center mb-24">
+                    <span class="text-[var(--primary-color)] font-bold tracking-[0.5em] uppercase text-[10px]">Operational Core</span>
+                    <h2 class="text-5xl md:text-7xl font-black mt-6 text-white tracking-tighter italic uppercase">Architects of Vision.</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="shatter-card group relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-2xl p-8 transition-all duration-500 hover:border-[var(--primary-color)]/30">
+                        <div class="absolute inset-0 pointer-events-none">
+                            <div class="shard absolute top-1/2 left-1/2 w-2 h-2 bg-[var(--primary-color)] opacity-0" style="--x: 100px; --y: -120px; --r: 45deg;"></div>
+                            <div class="shard absolute top-1/2 left-1/2 w-4 h-1 bg-white opacity-0" style="--x: -120px; --y: -80px; --r: -120deg;"></div>
+                            <div class="shard absolute top-1/2 left-1/2 w-1 h-4 bg-[var(--primary-color)] opacity-0" style="--x: 80px; --y: 100px; --r: 90deg;"></div>
+                        </div>
+
+                        <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-20 group-hover:scale-[2] transition-all duration-700 rounded-full blur-[80px]"></div>
+
+                        <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
+                            <div class="flex justify-between items-start mb-12">
+                                <span class="text-[var(--text-muted)] font-mono text-[10px]">ID // 001</span>
+                                <div class="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_15px_var(--primary-color)] animate-pulse"></div>
+                            </div>
+                            <h3 class="text-5xl font-black text-white tracking-tighter group-hover:tracking-[0.1em] transition-all duration-500">ALI</h3>
+
+                            <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                <a href="https://github.com/roaraxali" target="_blank" class="text-white hover:text-[var(--primary-color)] text-lg"><i class="bi bi-github"></i></a>
+                                <a href="https://www.theali.tech/" target="_blank" class="text-white hover:text-[var(--primary-color)] text-lg"><i class="bi bi-globe"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shatter-card group relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-2xl p-8 transition-all duration-500 hover:border-[var(--primary-color)]/30">
+                        <div class="absolute inset-0 pointer-events-none">
+                            <div class="shard absolute top-1/2 left-1/2 w-2 h-2 bg-[var(--primary-color)] opacity-0" style="--x: -110px; --y: -130px; --r: 25deg;"></div>
+                            <div class="shard absolute top-1/2 left-1/2 w-1 h-4 bg-white opacity-0" style="--x: 130px; --y: 80px; --r: 70deg;"></div>
+                        </div>
+                        <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-20 group-hover:scale-[2] transition-all duration-700 rounded-full blur-[80px]"></div>
+                        <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
+                            <div class="flex justify-between items-start mb-12">
+                                <span class="text-[var(--text-muted)] font-mono text-[10px]">ID // 002</span>
+                                <div class="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_15px_var(--primary-color)] animate-pulse"></div>
+                            </div>
+                            <h3 class="text-5xl font-black text-white tracking-tighter group-hover:tracking-[0.1em] transition-all duration-500">Ahmed</h3>
+                            <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                <a href="https://github.com/AhapraxAhmed" target="_blank" class="text-white hover:text-[var(--primary-color)] text-lg"><i class="bi bi-github"></i></a>
+                                <a href="https://ahmedd-dev.vercel.app/" target="_blank" class="text-white hover:text-[var(--primary-color)] text-lg"><i class="bi bi-linkedin"></i></a>
+                                <a href="https://www.linkedin.com/in/syed-ahmed-ba9838357/" target="_blank" class="text-white hover:text-[var(--primary-color)] text-lg"><i class="bi bi-globe"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shatter-card group relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-2xl p-8 transition-all duration-500 hover:border-[var(--primary-color)]/30">
+                        <div class="absolute inset-0 pointer-events-none">
+                            <div class="shard absolute top-1/2 left-1/2 w-3 h-1 bg-[var(--primary-color)] opacity-0" style="--x: 100px; --y: -140px; --r: 145deg;"></div>
+                            <div class="shard absolute top-1/2 left-1/2 w-2 h-2 bg-white opacity-0" style="--x: -100px; --y: 130px; --r: -45deg;"></div>
+                        </div>
+                        <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-20 group-hover:scale-[2] transition-all duration-700 rounded-full blur-[80px]"></div>
+                        <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
+                            <div class="flex justify-between items-start mb-12">
+                                <span class="text-[var(--text-muted)] font-mono text-[10px]">ID // 003</span>
+                                <div class="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_15px_var(--primary-color)] animate-pulse"></div>
+                            </div>
+                            <h3 class="text-5xl font-black text-white tracking-tighter group-hover:tracking-[0.1em] transition-all duration-500">Wahaj</h3>
+                            <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                    <a href="javascript:void(0)" onclick="showToast('Social profile under encryption.')" class="text-white hover:text-[var(--primary-color)] text-lg">
+                                        <i class="bi bi-twitter-x"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                       onclick="showToast('Professional dossier coming soon.')"
+                                       class="text-white hover:text-[var(--primary-color)] text-lg">
+                                        <i class="bi bi-linkedin"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                       onclick="showToast('Repository access denied.')"
+                                       class="text-white hover:text-[var(--primary-color)] text-lg">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shatter-card group relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-2xl p-8 transition-all duration-500 hover:border-[var(--primary-color)]/30">
+                        <div class="absolute inset-0 pointer-events-none">
+                            <div class="shard absolute top-1/2 left-1/2 w-2 h-2 bg-[var(--primary-color)] opacity-0" style="--x: 140px; --y: 10px; --r: 200deg;"></div>
+                            <div class="shard absolute top-1/2 left-1/2 w-1 h-1 bg-white opacity-0" style="--x: -140px; --y: -20px; --r: -200deg;"></div>
+                        </div>
+                        <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-20 group-hover:scale-[2] transition-all duration-700 rounded-full blur-[80px]"></div>
+                        <div class="relative z-10 transition-transform duration-500 group-hover:scale-105">
+                            <div class="flex justify-between items-start mb-12">
+                                <span class="text-[var(--text-muted)] font-mono text-[10px]">ID // 004</span>
+                                <div class="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_15px_var(--primary-color)] animate-pulse"></div>
+                            </div>
+                            <h3 class="text-5xl font-black text-white tracking-tighter group-hover:tracking-[0.1em] transition-all duration-500">Alishba</h3>
+                            <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                <div class="mt-8 flex gap-4 opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                    <a href="javascript:void(0)"
+                                       onclick="showToast('Professional dossier coming soon.')"
+                                       class="text-white hover:text-[var(--primary-color)] text-lg">
+                                        <i class="bi bi-linkedin"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                       onclick="showToast('Repository access denied.')"
+                                       class="text-white hover:text-[var(--primary-color)] text-lg">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <section id="contact" class="section-padding">
+            <div class="max-w-4xl mx-auto bg-white/[0.02] p-12 md:p-14 rounded-[4rem] border border-white/5 relative overflow-hidden">
+
+                <!-- Decor -->
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-[var(--primary-color)]/10 blur-[100px]"></div>
+
+                <div class="text-center mb-20 animate-fade-in">
+                    <span class="text-[var(--primary-color)] font-bold tracking-[0.4em] uppercase text-[10px]">Sanctuary Concierge</span>
+                    <h2 class="text-4xl md:text-6xl font-black mt-6 text-white tracking-tighter">LET'S CONNECT.</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-geo-alt text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">The Studio</h4>
+                        <p class="text-[var(--text-secondary)] text-xs leading-relaxed">We Don't have any<br/>STUDIO</p>
+                    </div>
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-envelope text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">Direct Link</h4>
+                        <p class="text-[var(--text-secondary)] text-xs">GallRex@gmail.com<br />+92-3001-4171-47714</p>
+                    </div>
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-chat-dots text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">Social Hub</h4>
+                        <p class="text-[var(--text-secondary)] text-xs">@@Gall_Rex<br/>#ArtRevolution</p>
+                    </div>
+                </div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="mb-10 p-6 bg-red-500/10 border border-red-500/20 text-red-400 rounded-3xl text-sm font-bold flex items-center gap-4">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <form asp-action="PostFeedback" method="post" class="space-y-8 animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="grid sm:grid-cols-2 md:grid-cols-1 gap-8">
+                        @if (string.IsNullOrEmpty(Context.Session.GetString("Name")))
+                        {
+                            <div>
+                                <label class="label">Full Identity</label>
+                                <input type="text" name="FullName" required class="form-control" placeholder="E.g. Leonardo da Vinci" />
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        <label class="label">The Inquiry</label>
+                        <input type="text" name="Subject" required class="form-control" placeholder="Acquisition, Press or Partnership?" />
+                    </div>
+                    <div>
+                        <label class="label">Your Message</label>
+                        <textarea name="Message" required rows="6" class="form-control resize-none" placeholder="Speak your mind..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-premium w-full py-5 text-lg flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(var(--primary-rgb),0.5)]">
+                        Send Transmission
+                    </button>
+                    <p class="text-center text-[var(--text-muted)] text-[10px] font-bold tracking-widest uppercase opacity-50">Our curators typically respond within 24 earth hours.</p>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+        function showToast(message) {
+        const container = document.getElementById('toast-container');
+        if (!container) return; // Prevent error if container is missing
+
+        const toast = document.createElement('div');
+
+        // Shadcn-inspired design with Backdrop Blur
+        toast.className = `
+            pointer-events-auto flex items-center justify-between min-w-[320px] max-w-md
+            bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/10
+            px-4 py-4 rounded-xl shadow-2xl
+            transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+            transform translate-y-12 opacity-0
+        `;
+
+        toast.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--primary-color)]/20 flex items-center justify-center">
+                    <i class="bi bi-info-circle-fill text-[var(--primary-color)] text-sm"></i>
+                </div>
+                <p class="text-[13px] font-medium text-white/90 tracking-tight">${message}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="ml-4 text-white/40 hover:text-white transition-colors">
+                <i class="bi bi-x-lg text-[10px]"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Animate In
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-12', 'opacity-0');
+        });
+
+        // Auto-remove after 3 seconds (adjusted from 1s for better readability)
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'scale-95', 'translate-y-2');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+</script>
+<style>
+    @@keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+    .animate-bounce-slow {
+        animation: bounce-slow 4s ease-in-out infinite;
+    }
+    .label {
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        margin-left: 24px;
+    }
+</style>

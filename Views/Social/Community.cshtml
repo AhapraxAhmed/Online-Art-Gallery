@@ -1,0 +1,167 @@
+@{
+    ViewData["Title"] = "Community Sanctuaries";
+}
+
+<div class="relative">
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="/images/community-bg.png" class="w-full h-full object-cover opacity-50 fixed blur-[5px]" alt="Background Network" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90"></div>
+        
+        <!-- Interactive Glows -->
+        <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[var(--primary-color)]/15 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[var(--secondary-color)]/15 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Main Container - Fully transparent to show the fixed background -->
+    <div class="min-h-screen pt-10 pb-32 px-6 max-w-7xl mx-auto relative z-10">
+        
+        <!-- Global Header -->
+        <div class="text-center mb-24 animate-fade-in relative z-20">
+            <div class="inline-flex items-center gap-4 py-2 px-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8">
+                <span class="w-2 h-2 rounded-full bg-[var(--primary-color)] animate-pulse"></span>
+                <span class="text-[10px] font-black tracking-[0.4em] uppercase text-[var(--text-secondary)]">The Global Network</span>
+            </div>
+            
+            <h1 class="premium-title mb-10">
+                A UNIVERSE OF<br/>
+                <span class="text-gradient">COLLECTIVE </span><br/>
+                CREATIVITY.
+            </h1>
+            <p class="premium-subtitle max-w-2xl mx-auto">
+                Where museum-grade masterpieces from the world's most prestigious archives meet the raw, unfiltered expression of our global creators.
+            </p>
+        </div>
+
+        <!-- Global Masterpieces Section -->
+        <div class="mb-32">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-8 px-4">
+                <div class="max-w-xl">
+                    <h2 class="text-4xl font-black text-white tracking-tighter uppercase mb-4">Museum Insights</h2>
+                    <p class="text-[var(--text-secondary)] text-sm font-medium leading-relaxed">Curated artifacts fetched in real-time from the world's leading museums. A direct portal to human history.</p>
+                </div>
+                <button onclick="loadExternalArt()" class="btn-premium flex items-center gap-3">
+                    <i class="bi bi-shuffle text-lg"></i> REFRESH VAULT
+                </button>
+            </div>
+            
+            <div id="externalArtContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Art Institute of Chicago content will appear here -->
+            </div>
+        </div>
+
+        <!-- Upcoming Exhibitions -->
+        <div class="mb-32">
+            <div class="flex items-center gap-6 mb-12 px-4">
+                <div class="w-16 h-[1px] bg-[var(--primary-color)]"></div>
+                <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Exhibitions</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                @if (ViewBag.Exhibitions != null)
+                {
+                    @foreach (var ex in (IEnumerable<Project.Models.Exhibition>)ViewBag.Exhibitions)
+                    {
+                        <a asp-action="ExhibitionDetails" asp-route-id="@ex.Id" class="group relative bg-[var(--bg-card)]/40 rounded-[3rem] overflow-hidden border border-white/5 backdrop-blur-xl flex flex-col transition-all hover:translate-y-[-10px] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] no-underline">
+                            <div class="h-64 overflow-hidden relative">
+                                <img src="@ex.ImageUrl" class="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-6 left-6 flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
+                                    <i class="bi bi-calendar3 text-[var(--primary-color)]"></i>
+                                    <span class="text-xs font-black text-white tracking-widest uppercase">@ex.Date.ToString("MMM dd")</span>
+                                </div>
+                            </div>
+                            <div class="p-10 flex-1 flex flex-col">
+                                <h3 class="text-2xl font-black text-white tracking-tighter mb-4 group-hover:text-[var(--primary-color)] transition-colors">@ex.Title</h3>
+                                <p class="text-[var(--text-secondary)] text-sm mb-8 line-clamp-3 leading-relaxed">@ex.Description</p>
+                                <div class="mt-auto flex items-center justify-between">
+                                    <div class="flex items-center gap-3 text-xs font-bold text-[var(--text-muted)] tracking-wider uppercase">
+                                        <i class="bi bi-geo-alt-fill text-[var(--primary-color)]"></i>
+                                        <span>@ex.Address</span>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[var(--primary-color)] transition-all">
+                                        <i class="bi bi-arrow-up-right text-white"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadExternalArt() {
+            const container = document.getElementById('externalArtContainer');
+            container.innerHTML = Array(4).fill(0).map(() => `
+                <div class="glass animate-pulse h-[450px] rounded-[2.5rem] border border-white/5"></div>
+            `).join('');
+
+            try {
+                const response = await fetch('/Social/GetExternalArt');
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.length > 0) {
+                    const arts = result.data;
+                    const shuffled = arts.sort(() => 0.5 - Math.random());
+                    const selected = shuffled.slice(0, 4);
+
+                    container.innerHTML = selected.map(art => `
+                        <div class="group relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[var(--bg-card)]/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-700">
+                            <div class="absolute top-6 left-6 z-10 flex items-center gap-3 bg-black/40 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10">
+                                <img src="${art.sourceAvatar}" class="w-5 h-5 rounded-full object-cover">
+                                <span class="text-[9px] text-white font-black uppercase tracking-[0.2em]">${art.source}</span>
+                            </div>
+                            <div class="aspect-[3/4] overflow-hidden">
+                                <img src="${art.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s]" onerror="this.src='/images/hero-main.png'">
+                            </div>
+                            <div class="p-8 pb-10 bg-gradient-to-t from-black/100 via-black/40 to-transparent absolute inset-0 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                <h3 class="text-white font-black text-xl tracking-tighter mb-2 leading-tight">${art.title}</h3>
+                                <p class="text-[var(--primary-color)] text-[10px] font-black tracking-widest uppercase mb-6 italic">${art.artist}</p>
+                                <div class="flex gap-3">
+                                    <button onclick="shareArt('${art.imageUrl}', '${art.title}')" class="flex-1 bg-white/10 hover:bg-white/20 p-3 rounded-2xl text-white text-[10px] font-black tracking-widest uppercase backdrop-blur-xl flex items-center justify-center gap-2 border border-white/10 transition-all">
+                                        <i class="bi bi-share"></i> Share Artifact
+                                    </button>
+                                    <button class="bg-[var(--primary-color)] hover:scale-110 p-3 rounded-2xl text-white transition-transform flex items-center justify-center w-12 border border-[var(--primary-color)]">
+                                        <i class="bi bi-heart-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error(result.error || 'Empty art collection');
+                }
+            } catch (error) {
+                console.error('Failed to load external art:', error);
+                container.innerHTML = `
+                    <div class="col-span-full py-20 text-center glass rounded-[3rem]">
+                        <i class="bi bi-exclamation-triangle-fill text-4xl mb-4 text-[var(--primary-color)]"></i>
+                        <h4 class="text-white font-black tracking-tighter text-xl">MUSEUM API RESTING</h4>
+                        <p class="text-[var(--text-secondary)] text-sm mb-6">Our connection to the Chicago archives is briefly interrupted.</p>
+                        <button onclick="loadExternalArt()" class="btn-premium px-8">RE-VAULT</button>
+                    </div>
+                `;
+            }
+        }
+
+        function shareArt(url, title) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: `Check out this amazing artwork: ${title}`,
+                    url: url
+                }).catch(err => console.error('Error sharing:', err));
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Artifact link copied to sanctuary clipboard!');
+                });
+            }
+        }
+
+        // Initialize immediately
+        loadExternalArt();
+    </script>
+}

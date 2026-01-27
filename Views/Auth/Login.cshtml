@@ -1,0 +1,334 @@
+@{
+    ViewData["Title"] = "Welcome";
+    Layout = "_AuthLayout";
+    bool showRegister = ViewBag.ShowRegister ?? false;
+}
+
+<div class="flex items-center justify-center w-full px-2 py-6 animate-fade-in">
+    <div class="relative overflow-hidden w-full md:max-w-[900px] min-h-[500px] md:min-h-[600px] glass-morphism rounded-[2rem] md:rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 @(showRegister ? "container-active" : "")" id="auth-container">
+
+        <!-- SIGN UP FORM -->
+        <div class="form-container sign-up-container absolute md:absolute top-0 h-full md:h-full transition-all duration-700 ease-in-out left-0 w-full md:w-1/2 z-0 opacity-0 md:opacity-100 mobile-hidden md:block">
+            <form asp-action="Register" method="post" class="bg-transparent backdrop-blur-3xl flex flex-col items-center justify-center h-full p-6 md:p-2 md:px-6 text-center space-y-4">
+                <div class="mb-4">
+                    <h1 class="text-2xl md:text-3xl font-black text-white tracking-tighter mb-1">JOIN THE CIRCLE</h1>
+                    <p class="text-xs md:text-sm text-slate-400 font-medium">Start your artistic journey today.</p>
+                </div>
+
+                <div class="flex gap-3 mb-4">
+                    <a asp-action="GithubLogin" class="social-btn"><i class="bi bi-github"></i></a>
+                    <a asp-action="GoogleLogin" class="social-btn"><i class="bi bi-google"></i></a>
+                    <a asp-action="DiscordLogin" class="social-btn"><i class="bi bi-discord"></i></a>
+                </div>
+
+                <div class="w-full space-y-3">
+                    <input type="text" name="Name" placeholder="Full Name" class="auth-input" required />
+                    @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
+                    {
+                        <div class="text-red-400 text-[10px] font-bold text-left px-2 uppercase">@ViewData.ModelState["Name"]?.Errors[0].ErrorMessage</div>
+                    }
+
+                    <input type="email" name="Email" placeholder="Email" class="auth-input" required />
+                    @if (ViewData.ModelState["Email"]?.Errors.Count > 0)
+                    {
+                        <div class="text-red-400 text-[10px] font-bold text-left px-2 uppercase">@ViewData.ModelState["Email"]?.Errors[0].ErrorMessage</div>
+                    }
+
+                    <div class="relative">
+                        <input type="password" id="RegPassword" name="Password" placeholder="Password" class="auth-input" required />
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/30 hover:text-white/60" onclick="togglePassword('RegPassword', 'regPassIcon')">
+                            <i class="bi bi-eye-slash" id="regPassIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full md:w-auto mt-4 px-12 py-4 bg-primary text-white font-black text-xs md:text-sm rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all tracking-widest uppercase">SIGN UP</button>
+
+                <div class="mt-6 md:hidden">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                        Already a member?
+                        <button type="button" onclick="activateSignIn()" class="text-primary hover:underline ml-1">Sign In</button>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <!-- SIGN IN FORM -->
+        <div class="form-container sign-in-container absolute md:absolute top-0 h-full md:h-full transition-all duration-700 ease-in-out left-0 w-full md:w-1/2 z-20 opacity-100">
+            <form asp-action="Login" method="post" class="bg-transparent backdrop-blur-3xl flex flex-col items-center justify-center h-full p-6 md:px-12 text-center space-y-4">
+                <div class="mb-4">
+                    <h1 class="text-2xl md:text-3xl font-black text-white tracking-tighter mb-1">WELCOME BACK</h1>
+                    <p class="text-xs md:text-sm text-slate-400 font-medium">Please sign in to your sanctuary.</p>
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="w-full p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-[10px] md:text-xs font-bold flex items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+                    </div>
+                }
+
+                <div class="flex gap-3 mb-4">
+                    <a asp-action="GithubLogin" class="social-btn"><i class="bi bi-github"></i></a>
+                    <a asp-action="GoogleLogin" class="social-btn"><i class="bi bi-google"></i></a>
+                    <a asp-action="DiscordLogin" class="social-btn"><i class="bi bi-discord"></i></a>
+                </div>
+
+                <div class="w-full space-y-3">
+                    <input type="email" name="Email" placeholder="Email Address" class="auth-input" required />
+                    <div class="relative">
+                        <input type="password" id="LoginPassword" name="Password" placeholder="Password" class="auth-input" required />
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/30 hover:text-white/60" onclick="togglePassword('LoginPassword', 'loginPassIcon')">
+                            <i class="bi bi-eye-slash" id="loginPassIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="text-red-400 text-[10px] font-bold bg-red-400/10 py-2 px-4 rounded-lg border border-red-400/20 w-full">
+                        <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
+                    </div>
+                }
+
+                <a asp-action="ForgotPassword" class="text-[10px] text-slate-500 hover:text-primary transition-colors uppercase font-black tracking-widest">Forgot password?</a>
+
+                <button type="submit" class="w-full md:w-auto mt-2 px-12 py-4 bg-primary text-white font-black text-xs md:text-sm rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all tracking-widest uppercase">SIGN IN</button>
+
+                <div class="mt-6 md:hidden">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                        New here?
+                        <button type="button" onclick="activateSignUp()" class="text-primary hover:underline ml-1">Create Account</button>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <!-- DESKTOP OVERLAY -->
+        <div class="overlay-container hidden md:block absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-700 ease-in-out z-50">
+            <div class="overlay bg-transparent relative left-[-100%] h-full w-[200%] transform transition-transform duration-700 ease-in-out border-l border-white/10">
+
+                <!-- Left Overlay (Show when Sign Up is active) -->
+                <div class="overlay-panel overlay-left absolute flex flex-col items-center justify-center w-1/2 h-full top-0 left-0 transform -translate-x-[20%] transition-transform duration-700 ease-in-out px-10 text-center bg-white/5 backdrop-blur-3xl">
+                    <h1 class="text-4xl font-black text-white tracking-tighter mb-4 uppercase">Welcome Back!</h1>
+                    <p class="text-sm text-slate-300 mb-8 max-w-[280px]">To keep connected with us please login with your personal info</p>
+                    <button class="px-12 py-4 border border-white/20 rounded-2xl bg-white/5 text-white text-[10px] font-black tracking-widest uppercase transition-all hover:bg-white/10 hover:border-white/40 active:scale-95" id="signIn">SIGN IN</button>
+                </div>
+
+                <!-- Right Overlay (Show when Sign In is active) -->
+                <div class="overlay-panel overlay-right absolute flex flex-col items-center justify-center w-1/2 h-full top-0 right-0 transform translate-x-0 transition-transform duration-700 ease-in-out px-10 text-center bg-white/5 backdrop-blur-3xl">
+                    <h1 class="text-4xl font-black text-white tracking-tighter mb-4 uppercase">Hello, Friend!</h1>
+                    <p class="text-sm text-slate-300 mb-8 max-w-[280px]">Enter your personal details and start your journey with us</p>
+                    <button class="px-12 py-4 border border-white/20 rounded-2xl bg-white/5 text-white text-[10px] font-black tracking-widest uppercase transition-all hover:bg-white/10 hover:border-white/40 active:scale-95" id="signUp">SIGN UP</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* DESKTOP ANIMATIONS */
+    @@media (min-width: 768px) {
+        .container-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1 !important;
+            z-index: 20;
+        }
+
+        .container-active .sign-in-container {
+            transform: translateX(100%);
+            opacity: 0 !important;
+            z-index: 0;
+        }
+
+        .container-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .container-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .container-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .container-active .overlay-right {
+            transform: translateX(20%);
+        }
+    }
+
+    @@media (max-width: 767px) {
+        #auth-container {
+            height: auto;
+            min-height: unset;
+            max-width: 95%;
+            margin: 0 auto;
+            overflow: visible;
+        }
+
+        .form-container {
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 500px;
+            display: none;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+            .form-container.mobile-active {
+                display: flex !important;
+            }
+
+        .sign-up-container, .sign-in-container {
+            top: 0 !important;
+            left: 0 !important;
+        }
+
+        .mobile-hidden {
+            display: none !important;
+        }
+
+        form {
+            padding: 2.5rem 1.5rem !important;
+            width: 100% !important;
+        }
+    }
+
+    /* REFINED COMPONENTS */
+    .auth-input {
+        width: 100% !important;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        color: white;
+        font-weight: 500;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .auth-input:focus {
+            border-color: rgba(var(--primary-rgb), 0.5);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+    .social-btn {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.85rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+    }
+
+        .social-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+    @@media (max-width: 767px) {
+        .social-btn {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    const container = document.getElementById('auth-container');
+    const signUpBtn = document.getElementById('signUp');
+    const signInBtn = document.getElementById('signIn');
+
+    const signUpContainer = document.querySelector('.sign-up-container');
+    const signInContainer = document.querySelector('.sign-in-container');
+
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+
+    function activateSignUp() {
+        container.classList.add("container-active");
+        if (window.innerWidth < 768) {
+            signUpContainer.classList.add('mobile-active');
+            signUpContainer.classList.remove('mobile-hidden');
+            signInContainer.classList.remove('mobile-active');
+            signInContainer.classList.add('mobile-hidden');
+        }
+    }
+
+    function activateSignIn() {
+        container.classList.remove("container-active");
+        if (window.innerWidth < 768) {
+            signUpContainer.classList.remove('mobile-active');
+            signUpContainer.classList.add('mobile-hidden');
+            signInContainer.classList.add('mobile-active');
+            signInContainer.classList.remove('mobile-hidden');
+        }
+    }
+
+    function handleResize() {
+        if (window.innerWidth < 768) {
+            if (container.classList.contains('container-active')) {
+                activateSignUp();
+            } else {
+                activateSignIn();
+            }
+        } else {
+            // On desktop, ensure both are potentially visible but controlled by desktop CSS
+            signUpContainer.classList.remove('mobile-hidden', 'mobile-active');
+            signInContainer.classList.remove('mobile-hidden', 'mobile-active');
+        }
+    }
+
+    // Initial state and resize listener
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    signUpBtn?.addEventListener('click', activateSignUp);
+    signInBtn?.addEventListener('click', activateSignIn);
+
+    @if (showRegister)
+    {
+            <text>
+                activateSignUp();
+            </text>
+    }
+</script>

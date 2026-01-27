@@ -1,0 +1,35 @@
+@model Project.ViewModels.VerifyTwoFactorViewModel
+@{
+    ViewData["Title"] = "Two-Factor Authentication";
+}
+
+<div class="pt-2 pb-20 px-6 min-h-screen flex items-center justify-center">
+    <div class="glass p-8 md:p-12 w-full max-w-md animate-fade-in">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 text-primary mb-4">
+                <i class="bi bi-shield-lock-fill text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-black mb-2">Two-Factor Auth</h1>
+            <p class="text-slate-500">Enter the code from your authenticator app.</p>
+        </div>
+
+        <form asp-action="VerifyTwoFactor" method="post" class="space-y-6">
+
+            
+            <div>
+                <input asp-for="Code" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-4 text-center text-3xl tracking-[1em] font-mono focus:border-primary outline-none transition-all" placeholder="000000" maxlength="6" autofocus />
+                <span asp-validation-for="Code" class="text-red-400 text-sm mt-1 block text-center"></span>
+            </div>
+
+            <button type="submit" class="w-full btn-premium py-4 text-lg flex items-center justify-center">Verify</button>
+            
+            <div class="text-center">
+                <a asp-controller="Auth" asp-action="Logout" class="text-sm text-slate-500 hover:text-white transition-colors">Back to Login</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

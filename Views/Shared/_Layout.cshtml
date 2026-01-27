@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Art Gallery</title>
+    <link rel="icon" type="image" href="~/images/logo.PNG">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: 'var(--primary-color)',
+                        secondary: 'var(--secondary-color)',
+                        dark: 'var(--bg-primary)',
+                        glass: 'var(--glass-bg)'
+                    },
+                    animation: {
+                        'slide-down': 'slideDown 0.3s ease-out'
+                    },
+                    keyframes: {
+                        slideDown: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="~/css/premium.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/loader.css" asp-append-version="true" />
+</head>
+@{
+        var currentTheme = Context.Session.GetString("Theme") ?? "dark";
+        var themeClass = "";
+        var inlineStyles = "";
+
+        if (currentTheme.StartsWith("custom|"))
+        {
+                themeClass = "theme-custom";
+                var parts = currentTheme.Split('|');
+
+                string HexToRgb(string hex)
+                {
+                        try
+                        {
+                                hex = hex.Replace("#", "");
+                                if (hex.Length == 6)
+                                {
+                                        var c = System.Drawing.ColorTranslator.FromHtml("#" + hex);
+                                        return $"{c.R}, {c.G}, {c.B}";
+                                }
+                        }
+                        catch { }
+                        return "0, 0, 0";
+                }
+
+                if (parts.Length >= 4)
+                {
+                        var pColor = parts[1];
+                        var sColor = parts[2];
+                        var bColor = parts[3];
+
+
+                        var bHex = bColor.Replace("#", "");
+                        var bRgb = System.Drawing.ColorTranslator.FromHtml("#" + bHex);
+                        var isLight = (bRgb.R * 0.299 + bRgb.G * 0.587 + bRgb.B * 0.114) > 128;
+
+                        var textColor = isLight ? "#0f172a" : "#f8fafc";
+                        var textSecondary = isLight ? "#475569" : "#94a3b8";
+
+
+
+
+
+                        string ModifyColor(System.Drawing.Color c, double factor)
+                        {
+                                var r = (int)Math.Clamp(c.R * factor, 0, 255);
+                                var g = (int)Math.Clamp(c.G * factor, 0, 255);
+                                var b = (int)Math.Clamp(c.B * factor, 0, 255);
+                                return $"#{r:X2}{g:X2}{b:X2}";
+                        }
+
+                        var cardColor = isLight ? ModifyColor(bRgb, 0.96) : ModifyColor(bRgb, 1.4);
+                        var surf1Color = isLight ? ModifyColor(bRgb, 0.92) : ModifyColor(bRgb, 1.8);
+                        var surf2Color = isLight ? ModifyColor(bRgb, 0.88) : ModifyColor(bRgb, 2.2);
+
+                        inlineStyles = $@"
+                                --primary-color: {pColor};
+                                --primary-rgb: {HexToRgb(pColor)};
+                                --secondary-color: {sColor};
+                                --bg-primary: {bColor};
+                                --bg-rgb: {HexToRgb(bColor)};
+                                --text-primary: {textColor};
+                                --text-secondary: {textSecondary};
+                                --bg-card: {cardColor};
+                                --bg-surface-1: {surf1Color};
+                                --bg-surface-2: {surf2Color};
+                        ";
+                }
+                else if (parts.Length >= 3)
+                {
+
+                        var pColor = parts[1];
+                        var sColor = parts[2];
+                        inlineStyles = $"--primary-color: {pColor}; --primary-rgb: {HexToRgb(pColor)}; --secondary-color: {sColor};";
+                }
+        }
+        else
+        {
+                themeClass = "theme-" + currentTheme;
+        }
+}
+<body class="antialiased bg-dark text-[var(--text-primary)] @themeClass" style="@inlineStyles"
+      data-cursor-pref="@(Context.Session.GetString("UseCustomCursor") ?? "true")"
+      data-cursor-style="@(Context.Session.GetString("CursorStyle") ?? "eclipse")">
+
+
+    <div id="cursor-container" class="hidden md:block">
+        <div id="cursor-dot"></div>
+        <div id="cursor-outline"></div>
+    </div>
+
+    <script>
+        if (sessionStorage.getItem('loaderShown')) {
+            document.documentElement.classList.add('loader-already-shown');
+        }
+    </script>
+
+    <!-- The Header acts as the Loader initially -->
+    <header id="main-header" class="fixed inset-0 z-[200] bg-black flex items-center justify-center">
+        <div id="nav-container" class="w-full h-full flex items-center justify-between px-6 md:px-12">
+
+            <div class="flex items-center gap-8 h-full">
+                <!-- Navbar Logo Group -->
+                <div id="nav-logo-wrapper" class="relative z-10">
+                    <a id="nav-logo-group" asp-controller="Home" asp-action="Index" class="flex items-center gap-2 group whitespace-nowrap">
+                        <!-- Base Layer (Grey) -->
+                        <div class="flex items-center gap-2 text-[#333]">
+                            <i class="bi bi-layers-half text-[#333]"></i>
+                            <span class="text-xl font-black tracking-tighter">GALLERY</span>
+                        </div>
+                        <!-- Progress Layer (White - Masked) -->
+                        <div id="loader-mask" class="absolute left-0 top-0 h-full flex items-center gap-2 text-white overflow-hidden pointer-events-none" style="width: 0%;">
+                            <div class="flex items-center gap-2 w-max">
+                                <i class="bi bi-layers-half text-primary"></i>
+                                <span class="text-xl font-black tracking-tighter">GALLERY</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <nav id="nav-links" class="hidden lg:flex items-center gap-10">
+                    <a class="nav-link text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-all relative group" asp-controller="Home" asp-action="Index">
+                        Home
+                        <span class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[var(--primary-color)] group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a class="nav-link text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-all relative group" asp-controller="Product" asp-action="Index">
+                        Gallery
+                        <span class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[var(--primary-color)] group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    @if (Context.Session.GetString("Role") != null)
+                    {
+                        <a class="nav-link text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-all relative group" asp-controller="Social" asp-action="Community">
+                            Community
+                            <span class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[var(--primary-color)] group-hover:w-full transition-all duration-300"></span>
+                        </a>
+                    }
+                    <a class="nav-link text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-all relative group" asp-controller="Home" asp-action="AboutContact">
+                        About
+                        <span class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[var(--primary-color)] group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="nav-actions" class="flex items-center gap-3 md:gap-6">
+                <!-- Eye Decor -->
+                <div class="hidden md:flex gap-1.5 items-center mr-2">
+                    <div class="eye-socket shadow-inner"><div class="pupil"></div></div>
+                    <div class="eye-socket shadow-inner"><div class="pupil"></div></div>
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-4">
+                    @if (Context.Session.GetString("Role") != null)
+                    {
+                        <div class="hidden md:flex items-center gap-4">
+                            <a asp-controller="Gallery" asp-action="MyCollection" class="text-[var(--text-secondary)] hover:text-red-500 transition-colors text-xl" title="My Personal Gallery">
+                                <i class="bi bi-heart-fill"></i>
+                            </a>
+                            <a asp-controller="Social" asp-action="Feed" class="text-[var(--text-secondary)] hover:text-primary transition-colors text-xl" title="Social Feed">
+                                <i class="bi bi-people-fill"></i>
+                            </a>
+                            <a asp-controller="AI" asp-action="Index" class="text-[var(--text-secondary)] hover:text-primary transition-colors text-xl" title="AI Art Generator">
+                                <i class="bi bi-magic"></i>
+                            </a>
+                        </div>
+                    }
+
+                    <a asp-controller="Cart" asp-action="Index" class="relative group">
+                        <i class="bi bi-bag text-xl text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors"></i>
+                        @{
+                            var sessionCart = Context.Session.GetString("Cart");
+                            var cartCount = 0;
+                            if (!string.IsNullOrEmpty(sessionCart))
+                            {
+                                var items = System.Text.Json.JsonSerializer.Deserialize<List<Project.Models.CartItem>>(sessionCart);
+                                if (items != null) cartCount = items.Sum(i => i.Quantity);
+                            }
+                        }
+                        @if (cartCount > 0)
+                        {
+                            <span class="absolute -top-2 -right-2 bg-primary text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+                                @cartCount
+                            </span>
+                        }
+                    </a>
+                </div>
+
+                <div class="h-8 w-px bg-[var(--glass-border)] hidden sm:block"></div>
+
+                @if (Context.Session.GetString("Role") != null)
+                {
+                    <div class="relative flex items-center">
+                        <button onclick="toggleMenu('user-dropdown')" class="user-profile-box focus:outline-none flex flex-row items-center !flex-nowrap">
+                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 truncate max-w-[80px] hidden sm:block mr-3">@Context.Session.GetString("Name")</span>
+                            <div class="user-avatar text-white shrink-0">
+                                @if (!string.IsNullOrEmpty(Context.Session.GetString("Avatar")))
+                                {
+                                    <img src="@Context.Session.GetString("Avatar")" class="w-full h-full object-cover rounded-full" alt="Avatar" />
+                                }
+                                else
+                                {
+                                    @((Context.Session.GetString("Name") ?? "U")[0])
+                                }
+                            </div>
+                        </button>
+
+                        <div id="user-dropdown" class="hidden absolute right-0 top-full mt-4 w-56 glass-morphism bg-[var(--bg-card)] rounded-2xl overflow-hidden shadow-2xl animate-slide-down z-[300] flex-col">
+                            <div class="p-4 border-b border-[var(--glass-border)]">
+                                <p class="text-xs text-[var(--text-secondary)] uppercase font-bold tracking-wider">Account</p>
+                                <p class="text-sm font-medium truncate text-[var(--text-primary)]">@Context.Session.GetString("Name")</p>
+                            </div>
+                            @if (Context.Session.GetString("Role") == "Admin")
+                            {
+                                <a asp-controller="Admin" asp-action="Index" class="flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-2)] hover:text-[var(--text-primary)] transition-colors">
+                                    <i class="bi bi-shield-lock"></i> Go to Admin
+                                </a>
+                            }
+                            <a asp-controller="Artist" asp-action="Index" class="flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-2)] hover:text-[var(--text-primary)] transition-colors">
+                                <i class="bi bi-palette"></i> Switch to Artist
+                            </a>
+                            <a asp-controller="Cart" asp-action="MyOrders" class="flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-2)] hover:text-[var(--text-primary)] transition-colors">
+                                <i class="bi bi-clock-history"></i> My Orders
+                            </a>
+                            <a asp-controller="Home" asp-action="Settings" class="flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-2)] hover:text-[var(--text-primary)] transition-colors">
+                                <i class="bi bi-gear"></i> Settings
+                            </a>
+                            <div class="border-t border-[var(--glass-border)]">
+                                <a asp-controller="Auth" asp-action="Logout" class="flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="btn-premium !py-3 !px-8 !text-[11px] !rounded-2xl">
+                        Sign In
+                    </a>
+                }
+
+                <button onclick="toggleMenu('mobile-nav')" class="lg:hidden text-[var(--text-secondary)] text-2xl focus:outline-none">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Menu (Separate from Header for better overlay) -->
+    <div id="mobile-nav" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-2xl hidden flex-col p-8 lg:hidden animate-fade-in">
+        <div class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-2 text-white">
+                <i class="bi bi-layers-half text-primary text-2xl"></i>
+                <span class="text-2xl font-black tracking-tighter">GALLERY</span>
+            </div>
+            <button onclick="toggleMenu('mobile-nav')" class="text-white text-3xl">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <nav class="flex flex-col gap-6">
+            <a class="text-3xl font-black uppercase tracking-tighter text-white hover:text-primary transition-colors" asp-controller="Home" asp-action="Index" onclick="toggleMenu('mobile-nav')">Home</a>
+            <a class="text-3xl font-black uppercase tracking-tighter text-white hover:text-primary transition-colors" asp-controller="Product" asp-action="Index" onclick="toggleMenu('mobile-nav')">Gallery</a>
+            @if (Context.Session.GetString("Role") != null)
+            {
+                <a class="text-3xl font-black uppercase tracking-tighter text-white hover:text-primary transition-colors" asp-controller="Social" asp-action="Community" onclick="toggleMenu('mobile-nav')">Community</a>
+            }
+            <a class="text-3xl font-black uppercase tracking-tighter text-white hover:text-primary transition-colors" asp-controller="Home" asp-action="AboutContact" onclick="toggleMenu('mobile-nav')">About</a>
+            
+            @if (Context.Session.GetString("Role") != null)
+            {
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <a asp-controller="Gallery" asp-action="MyCollection" class="bg-white/5 p-6 rounded-3xl flex flex-col items-center gap-2 border border-white/10" onclick="toggleMenu('mobile-nav')">
+                        <i class="bi bi-heart-fill text-2xl text-red-500"></i>
+                        <span class="text-[10px] uppercase font-black tracking-widest text-white/40">Loves</span>
+                    </a>
+                    <a asp-controller="Social" asp-action="Feed" class="bg-white/5 p-6 rounded-3xl flex flex-col items-center gap-2 border border-white/10" onclick="toggleMenu('mobile-nav')">
+                        <i class="bi bi-people-fill text-2xl text-primary"></i>
+                        <span class="text-[10px] uppercase font-black tracking-widest text-white/40">Feed</span>
+                    </a>
+                    <a asp-controller="AI" asp-action="Index" class="bg-white/5 p-6 rounded-3xl flex flex-col items-center gap-2 border border-white/10" onclick="toggleMenu('mobile-nav')">
+                        <i class="bi bi-magic text-2xl text-amber-400"></i>
+                        <span class="text-[10px] uppercase font-black tracking-widest text-white/40">AI Art</span>
+                    </a>
+                </div>
+            }
+            
+            <div class="h-px bg-white/10 my-4"></div>
+            
+            @if (Context.Session.GetString("Role") == null)
+            {
+                <a class="text-2xl font-bold text-primary" asp-controller="Auth" asp-action="Login">Sign In</a>
+            }
+            else
+            {
+                <div class="flex items-center gap-4">
+                    <div class="user-avatar w-12 h-12">
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Avatar")))
+                        {
+                            <img src="@Context.Session.GetString("Avatar")" class="w-full h-full object-cover" alt="Avatar" />
+                        }
+                        else
+                        {
+                            @((Context.Session.GetString("Name") ?? "U")[0])
+                        }
+                    </div>
+                    <div>
+                        <p class="text-white font-bold">@Context.Session.GetString("Name")</p>
+                        <a asp-controller="Auth" asp-action="Logout" class="text-red-400 text-sm">Logout</a>
+                    </div>
+                </div>
+            }
+        </nav>
+    </div>
+
+    <!-- Global Skeleton Loader -->
+    <div id="skeleton-overlay" class="skeleton-overlay">
+        <div class="skeleton-container">
+            
+            <!-- Gallery Skeleton -->
+            <div id="sketch-gallery" class="skeleton-sub-layout">
+                <div class="skeleton-gallery-hero"></div>
+                <div class="skeleton-filters"></div>
+                <div class="skeleton-grid">
+                    @for(int i=0; i<6; i++) {
+                        <div class="skeleton-card">
+                            <div class="skeleton-card-img"></div>
+                            <div class="skeleton-line med"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- About Skeleton -->
+            <div id="sketch-about" class="skeleton-sub-layout">
+                <div class="skeleton-about-hero">
+                    <div class="space-y-8">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line med"></div>
+                        <div class="skeleton-line"></div>
+                    </div>
+                    <div class="skeleton-about-img"></div>
+                </div>
+                <div class="skeleton-grid">
+                    <div class="skeleton-card" style="height: 200px"></div>
+                    <div class="skeleton-card" style="height: 200px"></div>
+                    <div class="skeleton-card" style="height: 200px"></div>
+                </div>
+            </div>
+
+            <!-- Cart Skeleton -->
+            <div id="sketch-cart" class="skeleton-sub-layout">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-cart-layout">
+                    <div class="space-y-4">
+                        <div class="skeleton-cart-item"></div>
+                        <div class="skeleton-cart-item"></div>
+                        <div class="skeleton-cart-item"></div>
+                    </div>
+                    <div class="skeleton-card" style="height: 400px"></div>
+                </div>
+            </div>
+
+            <!-- Generic/Community Skeleton -->
+            <div id="sketch-default" class="skeleton-sub-layout active">
+                <div class="skeleton-title mx-auto"></div>
+                <div class="skeleton-line med mx-auto mb-12"></div>
+                <div class="skeleton-grid">
+                    @for(int i=0; i<3; i++) {
+                        <div class="skeleton-card">
+                            <div class="skeleton-card-img"></div>
+                            <div class="skeleton-line med"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <main role="main" class="pt-28 min-h-screen">
+        @if (TempData["Success"] != null)
+        {
+            <div id="flash-message" class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-fade-in">
+                <div class="glass px-8 py-4 bg-green-500/10 border-green-500/20 text-green-400 rounded-2xl flex items-center gap-3 shadow-2xl backdrop-blur-3xl">
+                    <i class="bi bi-check2-circle text-2xl"></i>
+                    <span class="font-medium">@TempData["Success"]</span>
+                </div>
+            </div>
+        }
+        @{
+            var isHome = ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index";
+            var isGallery = ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index";
+            var containerClass = (isHome || isGallery) ? "" : "max-w-7xl mx-auto px-4 sm:px-6";
+        }
+        <div id="page-transition-container" class="page-transition-wrapper @containerClass">
+            <div id="page-content">
+                @RenderBody()
+                @await RenderSectionAsync("Scripts", required: false)
+            </div>
+        </div>
+    </main>
+
+    <footer id="contact" class="bg-[var(--bg-card)] border-t border-white/5 pt-10 pb-10 relative overflow-hidden">
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--primary-color)]/5 blur-[150px] -z-10"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-16 mb-8">
+                <div class="col-span-1 lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-8">
+                        <i class="bi bi-layers-half text-[var(--primary-color)] text-3xl"></i>
+                        <h3 class="text-3xl font-black tracking-tighter text-[var(--text-primary)]">GALLERY</h3>
+                    </div>
+                    <p class="text-[var(--text-secondary)] text-lg leading-relaxed max-w-sm mb-10">
+                        The ultimate sanctuary for digital artifacts and soul-stirring masterpieces. Connecting global creators with the next generation of collectors.
+                    </p>
+                    <div class="flex gap-5">
+                        <a href="javascript:void(0)" onclick="showToast('No Instagram account linked yet.')" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all duration-300 text-[var(--text-secondary)] hover:text-white">
+                            <i class="bi bi-instagram text-xl"></i>
+                        </a>
+                        <a href="javascript:void(0)" onclick="showToast('No Twitter/X account linked yet.')" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all duration-300 text-[var(--text-secondary)] hover:text-white">
+                            <i class="bi bi-twitter-x text-xl"></i>
+                        </a>
+                        <a href="javascript:void(0)" onclick="showToast('No Discord account linked yet.')" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all duration-300 text-[var(--text-secondary)] hover:text-white">
+                            <i class="bi bi-discord text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-[0.3em] mb-8 text-[var(--text-primary)]">Collection</h4>
+                    <ul class="space-y-4">
+                        <li><a asp-controller="Product" asp-action="Index" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block group">Digital Artworks <i class="bi bi-chevron-right text-[10px] opacity-0 group-hover:opacity-100 transition-all ml-1"></i></a></li>
+                        <li><a asp-controller="Product" asp-action="Index" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block group">Sculptures <i class="bi bi-chevron-right text-[10px] opacity-0 group-hover:opacity-100 transition-all ml-1"></i></a></li>
+                        <li><a asp-controller="Social" asp-action="Index" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block group">Exhibitions <i class="bi bi-chevron-right text-[10px] opacity-0 group-hover:opacity-100 transition-all ml-1"></i></a></li>
+                        <li><a asp-controller="Product" asp-action="Index" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block group">Limited Drops <i class="bi bi-chevron-right text-[10px] opacity-0 group-hover:opacity-100 transition-all ml-1"></i></a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-[0.3em] mb-8 text-[var(--text-primary)]">Sanctuary</h4>
+                    <ul class="space-y-4">
+                        <li><a asp-controller="Home" asp-action="Index" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="AboutContact" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block">About Our Legacy</a></li>
+                        <li><a asp-controller="Auth" asp-action="Login" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block">Join the Circle</a></li>
+                        <li><a href="javascript:void(0)" onclick="showToast('Support system is currently offline.')" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors inline-block">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+                <p class="text-[var(--text-muted)] text-[11px] font-medium tracking-wider uppercase">© 2025 GALLERY SANCTUARY. ALL RIGHTS RESERVED.</p>
+                <div class="flex gap-10 text-[11px] font-black tracking-widest uppercase">
+                    <a href="javascript:void(0)" onclick="showToast('Privacy Policy has not been published yet.')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Privacy</a>
+                    <a href="javascript:void(0)" onclick="showToast('Terms & Conditions have not been published yet.')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Terms</a>
+                    <a href="javascript:void(0)" onclick="showToast('Cookie Policy has not been published yet.')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        function toggleMenu(id) {
+            const menu = document.getElementById(id);
+            menu.classList.toggle('hidden');
+        }
+
+        // NEW: Hide dropdown on scroll
+        window.addEventListener('scroll', function() {
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        }, { passive: true });
+
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('user-dropdown');
+            const profileButton = document.querySelector('.user-profile-box');
+
+            // Safety check if element exists
+            if (!dropdown || !profileButton) return;
+
+            // If dropdown is closed, do nothing
+            if (dropdown.classList.contains('hidden')) return;
+
+            // If click is inside dropdown OR on the profile button, do nothing
+            if (dropdown.contains(event.target) || profileButton.contains(event.target)) {
+                return;
+            }
+
+            // Otherwise, hide the dropdown
+            dropdown.classList.add('hidden');
+        });
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `
+                pointer-events-auto flex items-center justify-between min-w-[320px] max-w-md
+                bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/10
+                px-4 py-4 rounded-xl shadow-2xl
+                transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+                transform translate-y-12 opacity-0
+            `;
+
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--primary-color)]/20 flex items-center justify-center">
+                        <i class="bi bi-info-circle-fill text-[var(--primary-color)] text-sm"></i>
+                    </div>
+                    <p class="text-[13px] font-medium text-white/90 tracking-tight">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="ml-4 text-white/40 hover:text-white transition-colors">
+                    <i class="bi bi-x-lg text-[10px]"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-12', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'scale-95', 'translate-y-2');
+                setTimeout(() => toast.remove(), 500);
+            }, 1000);
+        }
+    </script>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="~/js/navbar-logic.js" asp-append-version="true"></script>
+    <script src="~/js/page-transitions.js" asp-append-version="true"></script>
+    <script src="~/js/scroll-animations.js" asp-append-version="true"></script>
+    <script src="~/js/scroll-animations.js" asp-append-version="true"></script>
+    <script src="~/js/custom-cursor.js" asp-append-version="true"></script>
+    <script src="~/js/loader-animation.js" asp-append-version="true"></script>
+    <script>
+        setTimeout(function() {
+            var msg = document.getElementById('flash-message');
+            if (msg) {
+                msg.style.transition = 'opacity 0.6s, transform 0.6s';
+                msg.style.opacity = '0';
+                msg.style.transform = 'translate(-50%, -20px)';
+                setTimeout(function() { msg.remove(); }, 600);
+            }
+        }, 1000);
+
+
+        const cursorPref = document.body.getAttribute('data-cursor-pref') === 'true';
+        if (!cursorPref) {
+            const cursorContainer = document.getElementById('cursor-container');
+            if (cursorContainer) cursorContainer.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

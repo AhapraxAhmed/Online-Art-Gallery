@@ -1,0 +1,77 @@
+using Project.Models;
+using Project.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<MyContext>(options => 
+options.UseSqlServer(builder.Configuration.GetConnectionString("asd")));
+
+builder.Services.AddSession();
+builder.Services.AddMemoryCache();
+
+
+DotNetEnv.Env.Load();
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Google.GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+    options.ClaimActions.MapJsonKey("urn:google:picture", "picture");
+    
+
+    options.Events.OnRedirectToAuthorizationEndpoint = context =>
+    {
+        context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
+        return Task.CompletedTask;
+    };
+})
+.AddDiscord(options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("DISCORD_CLIENT_ID") ?? "";
+    options.ClientSecret = Environment.GetEnvironmentVariable("DISCORD_CLIENT_SECRET") ?? "";
+    options.Scope.Add("email");
+})
+.AddGitHub(options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("GITHUB_CLIENT_ID") ?? "";
+    options.ClientSecret = Environment.GetEnvironmentVariable("GITHUB_CLIENT_SECRET") ?? "";
+    options.Scope.Add("user:email");
+});
+
+builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddHttpClient();
+
+var app = builder.Build();
+
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseSession();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

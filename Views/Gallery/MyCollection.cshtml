@@ -1,0 +1,123 @@
+@{
+    ViewData["Title"] = "My Art Gallery";
+    var wishlist = (List<Project.Models.Product>)ViewBag.Wishlist;
+    var purchased = (List<Project.Models.Product>)ViewBag.Purchased;
+}
+
+<div class="py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-16">
+            <h1 class="text-6xl font-black text-[var(--text-primary)] tracking-tighter mb-4">MY PERSONAL<br/><span class="text-primary italic">GALLERY.</span></h1>
+            <p class="text-[var(--text-secondary)] text-xl max-w-2xl">A curated space for the pieces you own and the ones you desire.</p>
+        </div>
+
+        
+        <div class="flex gap-8 mb-12 border-b border-[var(--glass-border)]">
+            <button onclick="switchTab('purchased')" id="tab-purchased" class="tab-btn active pb-4 text-lg font-bold transition-all relative">
+                Purchased Collection (@purchased.Count)
+            </button>
+            <button onclick="switchTab('wishlist')" id="tab-wishlist" class="tab-btn pb-4 text-lg font-bold text-[var(--text-secondary)] transition-all relative">
+                Wishlist (@wishlist.Count)
+            </button>
+        </div>
+
+        
+        <div id="purchased-view" class="collection-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            @foreach (var art in purchased)
+            {
+                <div class="group bg-[var(--bg-card)] rounded-[32px] overflow-hidden border border-[var(--glass-border)] transition-all hover:translate-y-[-10px] hover:shadow-2xl hover:shadow-primary/10">
+                    <div class="aspect-square relative overflow-hidden">
+                        <img src="@art.ImageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                             <a asp-controller="Product" asp-action="Details" asp-route-id="@art.Id" class="btn-premium px-8 py-3">View Details</a>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <span class="text-[10px] text-green-500 font-bold tracking-widest uppercase mb-2 block">✓ Owned</span>
+                        <h3 class="text-2xl font-bold text-[var(--text-primary)] mb-2">@art.Name</h3>
+                        <p class="text-[var(--text-secondary)] text-sm line-clamp-2">@art.Description</p>
+                    </div>
+                </div>
+            }
+            @if (!purchased.Any())
+            {
+                <div class="col-span-full py-24 text-center border-2 border-dashed border-[var(--glass-border)] rounded-[40px]">
+                    <i class="bi bi-box-seam text-6xl text-slate-700 mb-6 block"></i>
+                    <h3 class="text-2xl font-bold text-[var(--text-primary)] mb-2">Your collection is empty</h3>
+                    <p class="text-[var(--text-secondary)] mb-8">Start your journey into art by acquiring your first piece.</p>
+                    <a asp-controller="Product" asp-action="Index" class="btn-premium px-10 py-4">Explore Gallery</a>
+                </div>
+            }
+        </div>
+
+        <div id="wishlist-view" class="collection-content hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            @foreach (var art in wishlist)
+            {
+                <div class="group bg-[var(--bg-card)] rounded-[32px] overflow-hidden border border-[var(--glass-border)] transition-all hover:translate-y-[-10px]">
+                    <div class="aspect-square relative overflow-hidden">
+                        <img src="@art.ImageUrl" class="w-full h-full object-cover" />
+                        <div class="absolute top-6 right-6">
+                            <button onclick="toggleWish(@art.Id, this)" class="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 text-primary shadow-xl">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-[var(--text-primary)] mb-2">@art.Name</h3>
+                        <div class="flex justify-between items-center mt-6 pt-6 border-t border-[var(--glass-border)]">
+                            <span class="text-xl font-bold text-primary">$@art.Price</span>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@art.Id" class="text-[var(--text-primary)] font-bold hover:text-primary transition-colors">Details →</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (!wishlist.Any())
+            {
+                <div class="col-span-full py-24 text-center border-2 border-dashed border-[var(--glass-border)] rounded-[40px]">
+                    <i class="bi bi-heart text-6xl text-slate-700 mb-6 block"></i>
+                    <h3 class="text-2xl font-bold text-[var(--text-primary)] mb-2">Nothing in your wishlist</h3>
+                    <p class="text-[var(--text-secondary)] mb-8">Save artworks you love to keep an eye on them.</p>
+                    <a asp-controller="Product" asp-action="Index" class="btn-premium px-10 py-4">Go Browsing</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .tab-btn.active {
+        color: var(--primary-color);
+    }
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 5px;
+    }
+</style>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.classList.add('text-[var(--text-secondary)]');
+        });
+        document.querySelectorAll('.collection-content').forEach(c => c.classList.add('hidden'));
+        
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.getElementById('tab-' + tab).classList.remove('text-[var(--text-secondary)]');
+        document.getElementById(tab + '-view').classList.remove('hidden');
+    }
+
+    function toggleWish(id, btn) {
+        $.post('/Gallery/ToggleWishlist', { productId: id }, function(res) {
+            if(res.success) {
+                location.reload();
+            }
+        });
+    }
+</script>

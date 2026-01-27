@@ -1,0 +1,36 @@
+@model Project.Models.User
+@{
+    ViewData["Title"] = "Add User";
+}
+
+<div class="glass p-5 animate-fade-in" style="max-width: 600px; margin: 0 auto;">
+    <h2 class="mb-4">Add New User</h2>
+    <form asp-action="AddUser" method="post">
+        <div class="mb-3">
+            <label for="Name">Full Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Enter full name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="Email">Email Address</label>
+            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="Password">Password</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="Create password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="mb-4">
+            <label for="Role">Role</label>
+            <select asp-for="Role" class="form-control">
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a asp-action="Users" style="color: #ccc; align-self: center;">Cancel</a>
+            <button type="submit" class="btn-premium">Create User</button>
+        </div>
+    </form>
+</div>

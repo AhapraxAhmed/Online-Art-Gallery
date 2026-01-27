@@ -1,0 +1,156 @@
+@{
+    ViewData["Title"] = "Art Gallery - Pure Inspiration";
+}
+
+<div class="relative min-h-screen flex items-center overflow-hidden bg-[var(--bg-primary)]">
+    <!-- Sophisticated Background Elements -->
+    <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[140%] bg-gradient-to-br from-[var(--primary-color)]/20 to-transparent -z-10 skew-x-12 blur-[120px] animate-pulse-slow"></div>
+    <div class="absolute bottom-[-10%] left-[-5%] w-[40%] h-[60%] bg-[var(--secondary-color)]/10 rounded-full blur-[120px] -z-10"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center pt-10 pb-20">
+        <div class="animate-fade-in relative z-10">
+            <div class="inline-flex items-center gap-3 py-2 px-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8">
+                <span class="w-2 h-2 rounded-full bg-[var(--primary-color)] animate-pulse"></span>
+                <span class="text-xs font-bold tracking-[0.3em] uppercase text-[var(--text-secondary)]">The Future of Art is Here</span>
+            </div>
+            
+            <h1 class="premium-title mb-10">
+                CRAFTING<br/>
+                <span class="text-gradient">UNSEEN </span><br/>
+                REALITIES.
+            </h1>
+            
+            <p class="premium-subtitle">
+                Step into a digital sanctuary where abstract vision meets unparalleled execution. Our new collection explores the fluid intersection of light, motion, and soul.
+            </p>
+            
+            <div class="flex flex-wrap gap-6 items-center">
+                <a asp-controller="Product" asp-action="Index" class="btn-premium">
+                    View Collection <i class="bi bi-arrow-right"></i>
+                </a>
+                <a asp-action="AboutContact" asp-controller="Home" class="group flex items-center gap-3 font-bold text-[var(--text-primary)] hover:text-[var(--primary-color)] transition-colors">
+                    <span class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[var(--primary-color)] transition-all">
+                        <i class="bi bi-eye-fill text-xl"></i>
+                    </span>
+                    The Vision
+                </a>
+            </div>
+        </div>
+
+        <div class="relative animate-fade-in md:block" style="animation-delay: 0.3s;">
+            <!-- Main Hero Frame -->
+            <div class="aspect-[3/4] rounded-[3.5rem] overflow-hidden border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative group">
+                <img src="/images/hero-main.png" class="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-110" alt="Main Hero Art" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+            </div>
+
+            <!-- Decorative Glow -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-[var(--primary-color)]/30 rounded-full blur-[80px] animate-pulse-slow"></div>
+        </div>
+    </div>
+</div>
+
+
+<section class="section-padding bg-[var(--bg-primary)]">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div class="reveal-on-scroll">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="w-12 h-[1px] bg-[var(--primary-color)]"></span>
+                    <span class="text-[var(--primary-color)] font-bold tracking-[0.3em] uppercase text-[10px]">Curated Excellence</span>
+                </div>
+                <h2 class="text-4xl md:text-6xl font-black text-[var(--text-primary)] tracking-tight">FEATURED<br/>ARTWORKS</h2>
+            </div>
+            <p class="text-[var(--text-secondary)] max-w-sm mb-2 text-sm leading-relaxed">
+                Hand-picked masterpieces that push the boundaries of artistic expression and digital ownership.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach (var art in (IEnumerable<Project.Models.Product>)ViewBag.Artworks)
+            {
+                <div class="product-card group">
+                    <div class="card-img-wrapper">
+                        <img src="@art.ImageUrl" alt="@art.Name" />
+                        <div class="absolute top-4 right-4 z-10">
+                            <div class="w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-[var(--primary-color)] transition-colors cursor-pointer">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-xl font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--primary-color)] transition-colors">@art.Name</h4>
+                                <p class="text-[10px] uppercase tracking-widest text-[var(--text-secondary)]">By Elite Creator</p>
+                            </div>
+                            <div class="text-lg font-black text-[var(--primary-color)]">$@art.Price</div>
+                        </div>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@art.Id" class="w-full py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-3 font-bold text-sm group-hover:bg-[var(--primary-color)] group-hover:border-[var(--primary-color)] group-hover:text-white transition-all duration-300">
+                            View Details <i class="bi bi-arrow-up-right translate-y-px"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section-padding bg-[var(--bg-card)] relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+        <h2 class="text-4xl md:text-7xl font-black mb-20 text-[var(--text-primary)] leading-[1.1]">REVOLUTIONIZING THE<br/><span class="text-gradient">ART EXPERIENCE.</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-12 glass group hover:bg-white/5 transition-all duration-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-[var(--primary-color)] to-[var(--secondary-color)] rounded-[2rem] flex items-center justify-center mx-auto mb-10 text-white shadow-2xl group-hover:rotate-12 transition-transform">
+                    <i class="bi bi-shield-check text-4xl"></i>
+                </div>
+                <h4 class="text-2xl font-bold mb-6 text-[var(--text-primary)]">SECURE TRANSACTIONS</h4>
+                <p class="text-[var(--text-secondary)] leading-relaxed">Every purchase is protected by state-of-the-art encryption and blockchain verification for ultimate peace of mind.</p>
+            </div>
+            <div class="p-12 glass group hover:bg-white/5 transition-all duration-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-[var(--secondary-color)] to-[var(--accent-color)] rounded-[2rem] flex items-center justify-center mx-auto mb-10 text-white shadow-2xl group-hover:rotate-12 transition-transform">
+                    <i class="bi bi-magic text-4xl"></i>
+                </div>
+                <h4 class="text-2xl font-bold mb-6 text-[var(--text-primary)]">AI CURATION</h4>
+                <p class="text-[var(--text-secondary)] leading-relaxed">Our advanced neural networks analyze your taste to help you discover masterpieces that resonate with your soul.</p>
+            </div>
+            <div class="p-12 glass group hover:bg-white/5 transition-all duration-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-[var(--accent-color)] to-[var(--primary-color)] rounded-[2rem] flex items-center justify-center mx-auto mb-10 text-white shadow-2xl group-hover:rotate-12 transition-transform">
+                    <i class="bi bi-globe text-4xl"></i>
+                </div>
+                <h4 class="text-2xl font-bold mb-6 text-[var(--text-primary)]">GLOBAL NETWORK</h4>
+                <p class="text-[var(--text-secondary)] leading-relaxed">Connect with a boundless community of creators and collectors from every corner of the globe.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding px-6 text-center bg-[var(--bg-primary)]">
+    <div class="max-w-4xl mx-auto glass p-16 md:p-32 rounded-[4rem] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-color)]/10 blur-[100px]"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-[var(--accent-color)]/10 blur-[100px]"></div>
+        
+        <h2 class="text-4xl md:text-6xl font-black mb-8 text-[var(--text-primary)] tracking-tight">JOIN THE ELITE CIRCLE<br/>OF COLLECTORS.</h2>
+        <p class="text-[var(--text-secondary)] text-lg mb-12 max-w-2xl mx-auto">Subscribe to our vanguard newsletter for exclusive drops, artist premieres, and private auction access.</p>
+        
+        <div class="flex flex-col md:flex-row gap-4 max-w-xl mx-auto relative z-10">
+            <input type="email" placeholder="Your master email" class="form-control" />
+            <button onclick="subscribe()" class="btn-premium whitespace-nowrap">Subscribe Now</button>
+        </div>
+    </div>
+</section>
+<script>
+       function subscribe() {
+      showToast("Thanks for subscribing! We’ll notify you with updates and new features.");
+         setTimeout(() => {
+      window.location.reload();
+    }, 1200);
+    }
+</script>

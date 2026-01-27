@@ -1,0 +1,61 @@
+@model List<Project.Models.WishlistItem>
+@{
+    ViewData["Title"] = "My Wishlist";
+}
+
+<div class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <span class="text-primary font-bold tracking-widest uppercase text-xs">Curated Selection</span>
+            <h1 class="text-5xl font-black mt-2">MY WISHLIST</h1>
+        </div>
+        <div class="glass px-6 py-3 rounded-2xl border border-[var(--glass-border)] text-sm font-bold tracking-tight">
+            <span class="text-primary mr-2">@Model.Count</span> saved items
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-cart-state animate-fade-in">
+            <i class="bi bi-heart empty-cart-icon"></i>
+            <h3 class="text-white text-2xl font-bold mb-4">Your wishlist is empty</h3>
+            <p class="text-slate-400 mb-8 max-w-sm mx-auto">Found a masterpiece you love but not quite ready to purchase? Save it here for later.</p>
+            <a asp-controller="Product" asp-action="Index" class="btn-premium">Browse Artworks</a>
+        </div>
+    }
+    else
+    {
+        <div class="product-grid animate-fade-in" style="padding: 0;">
+            @foreach (var item in Model)
+            {
+                <div class="product-card">
+                    <div class="product-image-container">
+                        @if(!string.IsNullOrEmpty(item.Product.ImageUrl)) {
+                             <img src="@item.Product.ImageUrl" alt="@item.Product.Name" />
+                        } else {
+                             <div class="w-full h-full bg-slate-900 flex items-center justify-center">
+                                 <i class="bi bi-image text-4xl opacity-20"></i>
+                             </div>
+                        }
+                    </div>
+                    <div class="p-6">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3 class="product-title mb-0">@item.Product.Name</h3>
+                            <div class="product-price">$@item.Product.Price</div>
+                        </div>
+                        <p class="text-slate-500 text-sm line-clamp-2 mb-4">@item.Product.Description</p>
+                        
+                        <div class="flex gap-2">
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.Product.Id" class="btn-premium flex-1 text-center py-2 px-4 text-sm">
+                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                            </a>
+                            <a asp-controller="Wishlist" asp-action="RemoveFromWishlist" asp-route-id="@item.Product.Id" class="glass px-3 py-2 rounded-xl text-red-500 hover:bg-red-500/10 transition-all border-red-500/20" title="Remove from wishlist">
+                                <i class="bi bi-heart-fill"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,121 @@
+@model IEnumerable<Project.Models.Product>
+@{
+    ViewData["Title"] = "Art Gallery";
+}
+<div class="animate-fade-in w-full">
+    
+    <div class="gallery-hero relative overflow-hidden rounded-none border-x-0 border-t-0 py-24 md:py-25 flex items-center justify-center text-center">
+        <div class="max-w-4xl px-6 relative z-10">
+            <span class="text-primary font-bold tracking-[0.4em] uppercase text-xs mb-4 block">The Global Archive</span>
+            <h1 class="text-5xl md:text-8xl font-black mt-2 mb-8 tracking-tighter text-white leading-[0.9]">Experience the<br/><span class="text-gradient">Essence of Art</span></h1>
+            <p class="text-slate-300 leading-relaxed text-lg md:text-xl font-medium max-w-2xl mx-auto opacity-70">
+                A borderless sanctuary where nationality and gender fade, leaving only the pure, unfiltered expression of the creator's soul.
+            </p>
+        </div>
+    </div>
+
+    
+    <div class="max-w-7xl mx-auto flex justify-end my-12 px-6">
+        <div class="glass px-8 py-4 rounded-full border border-[var(--glass-border)] text-xs font-black tracking-widest uppercase">
+            <span class="text-primary mr-3">@Model.Count()</span> Artifacts in Collection
+        </div>
+    </div>
+
+    
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="shop-container" style="padding-top: 0;">
+        
+        <aside class="shop-sidebar">
+            <div class="filter-box">
+                <h4 class="mb-6 font-bold tracking-tight">Find Artworks</h4>
+                
+                <form asp-controller="Product" asp-action="Index" method="get">
+                    
+                    <div class="mb-4">
+                        <label class="mb-2 text-muted" style="font-size: 0.85rem;">SEARCH</label>
+                        <div class="search-input-group">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control search-input" placeholder="Keyword..." />
+                        </div>
+                    </div>
+
+                    
+                    <div class="mb-4">
+                        <label class="mb-2 text-muted" style="font-size: 0.85rem;">SORT BY</label>
+                        <div class="position-relative">
+                            <select name="sortOrder" class="form-control" style="background: rgba(255,255,255); color: gray; border: 1px solid var(--glass-border);" onchange="this.form.submit()">
+                                <option value="" selected="@(ViewData["CurrentSort"] == null)">Name (A-Z)</option>
+                                <option value="name_desc" selected="@(ViewData["CurrentSort"] as string == "name_desc")">Name (Z-A)</option>
+                                <option value="price_asc" selected="@(ViewData["CurrentSort"] as string == "price_asc")">Price (Low to High)</option>
+                                <option value="price_desc" selected="@(ViewData["CurrentSort"] as string == "price_desc")">Price (High to Low)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-premium w-100">Apply Filters</button>
+                    @if (ViewData["CurrentFilter"] != null || ViewData["CurrentSort"] != null)
+                    {
+                        <a asp-action="Index" class="btn btn-sm w-100 mt-2 text-muted" style="border: 1px solid var(--glass-border);">Clear Filters</a>
+                    }
+                </form>
+            </div>
+        </aside>
+
+        
+        <main class="shop-content">
+            <div class="product-grid" style="padding: 0;">
+                @if(Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                @if (!item.IsApproved)
+                                {
+                                    <div class="absolute top-4 left-4 z-10">
+                                        <span class="px-3 py-1 bg-amber-500/90 text-white text-[10px] font-black uppercase rounded-lg shadow-lg">Pending Approval</span>
+                                    </div>
+                                }
+                                @if(!string.IsNullOrEmpty(item.ImageUrl)) {
+                                     <img src="@item.ImageUrl" alt="@item.Name" />
+                                } else {
+                                     <div class="w-full h-full bg-slate-900 flex items-center justify-center">
+                                         <i class="bi bi-image text-4xl opacity-20"></i>
+                                     </div>
+                                }
+                            </div>
+                            <div class="p-6">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h3 class="product-title mb-0">@item.Name</h3>
+                                    <div class="product-price">$@item.Price</div>
+                                </div>
+                                <p class="text-slate-500 text-sm line-clamp-2 mb-4">@item.Description</p>
+                                
+                                <div class="flex gap-2">
+                                    <a asp-action="Details" asp-route-id="@item.Id" target="_blank" class="btn-premium flex-1 text-center py-2 px-4 text-sm">
+                                        <i class="bi bi-eye me-1"></i> View Details
+                                    </a>
+                                    @if (Context.Session.GetInt32("UserId") != null)
+                                    {
+                                        <a asp-controller="Wishlist" asp-action="AddToWishlist" asp-route-id="@item.Id" class="glass px-3 py-2 rounded-xl text-slate-400 hover:text-red-500 hover:border-red-500/50 transition-all">
+                                            <i class="bi bi-heart"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-cart-state w-100">
+                        <i class="bi bi-search empty-cart-icon"></i>
+                        <h3 class="text-white">No artworks found</h3>
+                        <p class="text-muted">Try adjusting your search or filters to find what you're looking for.</p>
+                        <a asp-action="Index" class="btn-premium mt-4 font-sm">Reset All Filters</a>
+                    </div>
+                }
+            </div>
+        </main>
+    </div>
+</div>

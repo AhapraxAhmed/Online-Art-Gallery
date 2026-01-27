@@ -1,0 +1,214 @@
+@model Project.Models.User
+@{
+    ViewData["Title"] = "Welcome - Art Gallery";
+    Layout = "_AuthLayout";
+}
+
+<div class="min-h-screen flex items-center justify-center py-8 px-2 w-full">
+    <div class="max-w-4xl w-full">
+        <form asp-action="Onboarding" method="post" id="onboardingForm" class="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
+            <input type="hidden" name="Role" value="User" />
+
+            <div id="step-profile" class="space-y-6 md:space-y-12 animate-fade-in">
+
+                <div class="text-center space-y-4 md:space-y-6">
+                    <div class="inline-block px-4 py-1.5 md:px-6 md:py-2 rounded-full bg-primary/20 text-primary text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] backdrop-blur-md border border-primary/30">
+                        Final Step
+                    </div>
+                    <h1 class="text-[clamp(2.5rem,8vw,4rem)] leading-[1.1] font-black text-white tracking-tighter drop-shadow-2xl">
+                        WELCOME TO THE <span class="text-primary">GALLERY</span>
+                    </h1>
+                    <p class="text-slate-300 text-base md:text-xl font-medium max-w-2xl mx-auto px-2">
+                        We're excited to have you. Just a few final details to personalize your artistic journey.
+                    </p>
+                </div>
+
+                <div class="bg-black/40 backdrop-blur-3xl p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] md:rounded-[50px] border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] relative overflow-hidden group">
+
+                    <div class="absolute -top-24 -right-24 w-48 h-48 md:w-64 md:h-64 bg-primary/20 rounded-full blur-[80px] md:blur-[100px] group-hover:bg-primary/30 transition-all duration-700"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 relative z-10">
+
+                        <div class="space-y-8 md:space-y-10">
+                            <div class="group/input relative">
+                                <label class="text-[10px] md:text-xs text-primary uppercase font-black tracking-[0.2em] mb-3 block opacity-80 group-focus-within/input:opacity-100 transition-opacity">Your Age</label>
+                                <div class="relative age-input-container">
+                                    <input type="number" name="Age" id="ageInput" required min="13" max="100"
+                                           class="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-5 py-4 md:px-6 md:py-5 text-xl md:text-2xl text-white outline-none focus:border-primary/50 focus:bg-white/10 transition-all font-bold placeholder:text-white/20 appearance-none"
+                                           placeholder="24" />
+
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1">
+                                        <button type="button" onclick="stepAge(1)" class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
+                                            <i class="bi bi-chevron-up text-[10px]"></i>
+                                        </button>
+                                        <button type="button" onclick="stepAge(-1)" class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
+                                            <i class="bi bi-chevron-down text-[10px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group/input">
+                                <label class="text-[10px] md:text-xs text-primary uppercase font-black tracking-[0.2em] mb-3 block opacity-80">Gender Identity</label>
+                                <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+                                    <label class="flex-1">
+                                        <input type="radio" name="Sex" value="Male" class="hidden peer" required>
+                                        <div class="px-4 py-4 md:px-6 md:py-5 rounded-2xl border-2 border-white/10 text-white/60 cursor-pointer text-center transition-all peer-checked:border-primary peer-checked:bg-primary/20 peer-checked:text-white font-bold hover:bg-white/5 text-sm md:text-base">
+                                            <i class="bi bi-gender-male mr-2"></i> Male
+                                        </div>
+                                    </label>
+                                    <label class="flex-1">
+                                        <input type="radio" name="Sex" value="Female" class="hidden peer">
+                                        <div class="px-4 py-4 md:px-6 md:py-5 rounded-2xl border-2 border-white/10 text-white/60 cursor-pointer text-center transition-all peer-checked:border-primary peer-checked:bg-primary/20 peer-checked:text-white font-bold hover:bg-white/5 text-sm md:text-base">
+                                            <i class="bi bi-gender-female mr-2"></i> Female
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group/input flex flex-col">
+                            <label class="text-[10px] md:text-xs text-primary uppercase font-black tracking-[0.2em] mb-3 block opacity-80">What Inspires You?</label>
+                            <div class="relative flex-grow">
+                                <textarea name="Interests" required
+                                          class="w-full h-40 md:h-full bg-white/5 border-2 border-white/10 rounded-2xl md:rounded-3xl p-5 md:p-6 text-white outline-none focus:border-primary/50 focus:bg-white/10 transition-all resize-none font-medium placeholder:text-white/20 text-sm md:text-base"
+                                          placeholder="E.g. Surrealism, Digital Sculpting, Oil Paintings..."></textarea>
+                                <div class="absolute bottom-4 right-4 text-white/10 pointer-events-none">
+                                    <i class="bi bi-palette2 text-2xl md:text-3xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 md:mt-16 text-center">
+                        <button type="submit" class="group/btn relative w-full sm:w-auto inline-flex items-center justify-center px-10 py-4 md:px-12 md:py-5 font-black text-lg md:text-xl text-white transition-all duration-300 bg-primary rounded-xl md:rounded-2xl hover:scale-105 hover:shadow-[0_0_40px_rgba(var(--primary-rgb),0.4)] active:scale-95">
+                            <span class="relative z-10 flex items-center">
+                                ENTER THE GALLERY <i class="bi bi-arrow-right ml-3 group-hover/btn:translate-x-2 transition-transform"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Override background from _AuthLayout */
+    #body-theme .fixed.inset-0 img {
+        display: none;
+    }
+
+    #body-theme .fixed.inset-0 {
+        background: url('/images/onboarding_bg.png') no-repeat center center;
+        background-size: cover;
+    }
+
+    #body-theme .fixed.inset-0::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(var(--bg-rgb), 0.95) 100%);
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    @@keyframes fadeIn {
+        from { 
+            opacity: 0; 
+            transform: translateY(30px) scale(0.98); 
+            filter: blur(10px);
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    @@keyframes pulse-premium {
+        0% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4); }
+        70% { box-shadow: 0 0 0 20px rgba(var(--primary-rgb), 0); }
+        100% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0); }
+    }
+
+    button[type="submit"] {
+        animation: pulse-premium 2s infinite;
+    }
+
+    /* Custom Scrollbar for Textarea */
+    textarea::-webkit-scrollbar {
+        width: 8px;
+    }
+    textarea::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+    }
+
+    /* Age Input Styling */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    /* Responsive Adjustments */
+    @@media (max-width: 768px) {
+        .min-h-screen {
+            padding: 1rem 0.5rem !important;
+        }
+        .max-w-4xl {
+            width: 100% !important;
+        }
+        #step-profile h1 {
+            font-size: 2.25rem;
+            line-height: 1.1;
+        }
+        #step-profile p {
+            font-size: 1rem;
+            padding: 0 1rem;
+        }
+        .bg-black\/40 {
+            padding: 2rem 1.25rem !important;
+            border-radius: 30px !important;
+            margin: 0 0.5rem;
+        }
+        .grid-cols-1 {
+            gap: 2rem !important;
+        }
+        .age-input-container {
+            max-width: 100%;
+        }
+        textarea {
+            min-height: 150px;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 1.5rem 1rem !important;
+            font-size: 1.1rem;
+            border-radius: 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    function stepAge(delta) {
+        const input = document.getElementById('ageInput');
+        let val = parseInt(input.value) || 24;
+        val += delta;
+        if (val >= 13 && val <= 100) {
+            input.value = val;
+        }
+    }
+</script>

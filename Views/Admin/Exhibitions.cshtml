@@ -1,0 +1,48 @@
+@model IEnumerable<Project.Models.Exhibition>
+@{
+    ViewData["Title"] = "Exhibitions Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold">Physical Exhibitions</h1>
+        <p class="text-[var(--text-secondary)]">Manage details for forthcoming and past shows.</p>
+    </div>
+    <a asp-action="AddExhibition" class="btn-premium px-6 py-3 rounded-xl flex items-center gap-2">
+        <i class="bi bi-plus-lg"></i>
+        Add Exhibition
+    </a>
+</div>
+
+<div class="grid grid-cols-1 gap-6">
+    @foreach (var ex in Model)
+    {
+        <div class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--glass-border)] flex gap-6 items-center">
+            @if (!string.IsNullOrEmpty(ex.ImageUrl))
+            {
+                <div class="w-24 h-24 rounded-xl overflow-hidden shadow-sm">
+                    <img src="@ex.ImageUrl" class="w-full h-full object-cover" />
+                </div>
+            }
+            <div class="flex-1">
+                <h3 class="font-bold text-lg text-[var(--text-primary)]">@ex.Title</h3>
+                <p class="text-sm text-[var(--text-secondary)]">@ex.Date.ToString("MMM dd, yyyy") @@ @ex.Address</p>
+                <p class="text-xs text-slate-500 mt-1 line-clamp-1">@ex.Description</p>
+            </div>
+            <div class="flex gap-2">
+                <a asp-action="DeleteExhibition" asp-route-id="@ex.Id" class="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors" onclick="return confirm('Delete this exhibition?')">
+                    <i class="bi bi-trash3"></i>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-20 bg-[var(--bg-card)] rounded-3xl border-2 border-dashed border-[var(--glass-border)]">
+            <i class="bi bi-geo-alt text-5xl text-slate-700 mb-4 block"></i>
+            <p class="text-[var(--text-secondary)]">No exhibitions listed.</p>
+        </div>
+    }
+</div>
