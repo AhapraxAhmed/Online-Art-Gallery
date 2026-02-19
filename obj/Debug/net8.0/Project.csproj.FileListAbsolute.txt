@@ -917,3 +917,4 @@ D:\Project\Project\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Roarax\Desktop\Project\Project\bin\Debug\net8.0\System.Private.Windows.Core.dll
 C:\Users\Roarax\Desktop\Project\Project\bin\Debug\net8.0\System.Private.Windows.GdiPlus.dll
 C:\Users\Roarax\Desktop\Project\Project\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll
+D:\Project\Project\obj\Debug\net8.0\Project.sourcelink.json
