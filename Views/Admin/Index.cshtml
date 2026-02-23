@@ -1,0 +1,203 @@
+@model IEnumerable<Project.Models.Order>
+@{
+    ViewData["Title"] = "Dashboard";
+    var pendingCount = (int)(ViewBag.PendingApprovals ?? 0);
+}
+
+<!-- Welcome Section -->
+<div class="mb-10 animate-fade-in">
+    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
+        Welcome back, @Context.Session.GetString("Name")
+    </h1>
+    <p class="text-[var(--text-secondary)] mt-2">Here's what's happening in your gallery today.</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 h-max">
+    
+    <!-- Revenue -->
+    <div class="glass p-6 rounded-2xl border border-[var(--glass-border)] relative group overflow-hidden">
+        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <i class="bi bi-currency-dollar text-6xl text-green-400"></i>
+        </div>
+        <div class="relative z-10">
+            <p class="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-2">Total Revenue</p>
+            <h3 class="text-3xl font-black text-white mb-1">$@((ViewBag.TotalRevenue ?? 0).ToString("N0"))</h3>
+            <p class="text-xs text-green-400 flex items-center gap-1">
+                <i class="bi bi-arrow-up-right"></i> +12.5% <span class="text-[var(--text-secondary)] opacity-60 ml-1">vs last month</span>
+            </p>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-transparent"></div>
+    </div>
+
+    <!-- Orders -->
+    <div class="glass p-6 rounded-2xl border border-[var(--glass-border)] relative group overflow-hidden">
+        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <i class="bi bi-bag-check text-6xl text-blue-400"></i>
+        </div>
+        <div class="relative z-10">
+            <p class="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-2">Total Orders</p>
+            <h3 class="text-3xl font-black text-white mb-1">@ViewBag.TotalOrders</h3>
+            <p class="text-xs text-blue-400 flex items-center gap-1">
+                <i class="bi bi-arrow-up-right"></i> +5 New <span class="text-[var(--text-secondary)] opacity-60 ml-1">today</span>
+            </p>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-transparent"></div>
+    </div>
+
+    <!-- Users -->
+    <div class="glass p-6 rounded-2xl border border-[var(--glass-border)] relative group overflow-hidden">
+        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <i class="bi bi-people text-6xl text-purple-400"></i>
+        </div>
+        <div class="relative z-10">
+            <p class="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-2">Total Users</p>
+            <h3 class="text-3xl font-black text-white mb-1">@ViewBag.TotalUsers</h3>
+            <p class="text-xs text-purple-400 flex items-center gap-1">
+                <i class="bi bi-arrow-up-right"></i> Growing <span class="text-[var(--text-secondary)] opacity-60 ml-1">steadily</span>
+            </p>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-transparent"></div>
+    </div>
+
+    <!-- Artworks -->
+    <div class="glass p-6 rounded-2xl border border-[var(--glass-border)] relative group overflow-hidden">
+        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <i class="bi bi-palette text-6xl text-amber-400"></i>
+        </div>
+        <div class="relative z-10">
+             <p class="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider mb-2">Total Artworks</p>
+            <h3 class="text-3xl font-black text-white mb-1">@ViewBag.TotalProducts</h3>
+            <p class="text-xs text-amber-400 flex items-center gap-1">
+                <i class="bi bi-collection"></i> Inventory <span class="text-[var(--text-secondary)] opacity-60 ml-1">status</span>
+            </p>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-transparent"></div>
+    </div>
+</div>
+
+<!-- Main Content Split -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Recent Orders (2 cols) -->
+    <div class="lg:col-span-2 space-y-8">
+        <div class="glass rounded-3xl border border-[var(--glass-border)] overflow-hidden">
+            <div class="p-6 border-b border-[var(--glass-border)] flex justify-between items-center">
+                <h3 class="font-bold text-lg text-white">Recent Orders</h3>
+                <a asp-action="Orders" class="text-xs font-bold text-[var(--primary-color)] hover:text-white transition-colors">View All</a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-surface-2)]">
+                        <tr>
+                            <th class="px-6 py-4">Order ID</th>
+                            <th class="px-6 py-4">Customer</th>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Amount</th>
+                            <th class="px-6 py-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--glass-border)]">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var order in Model)
+                            {
+                                <tr class="hover:bg-[var(--bg-surface-2)]/50 transition-colors">
+                                    <td class="px-6 py-4 font-mono text-[var(--text-secondary)]">#@order.Id</td>
+                                    <td class="px-6 py-4 font-bold text-white">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-[var(--bg-surface-2)] flex items-center justify-center text-xs text-[var(--text-secondary)] font-bold">
+                                                @((order.CustomerName ?? "U")[0])
+                                            </div>
+                                            @order.CustomerName
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-[var(--text-secondary)]">@order.OrderDate.ToString("MMM dd")</td>
+                                    <td class="px-6 py-4">
+                                        @{
+                                            var statusColor = "bg-gray-500/20 text-gray-400 border-gray-500/30";
+                                            if (order.Status == "Pending") statusColor = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                                            if (order.Status == "Confirmed") statusColor = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                                            if (order.Status == "Shipped") statusColor = "bg-purple-500/20 text-purple-400 border-purple-500/30";
+                                            if (order.Status == "Delivered") statusColor = "bg-green-500/20 text-green-400 border-green-500/30";
+                                            if (order.Status == "Cancelled") statusColor = "bg-red-500/20 text-red-400 border-red-500/30";
+                                        }
+                                        <span class="inline-flex px-2 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider @statusColor">
+                                            @order.Status
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 font-bold text-white">$@order.TotalAmount.ToString("N0")</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="w-8 h-8 rounded-lg bg-[var(--bg-surface-2)] hover:bg-[var(--primary-color)] text-[var(--text-secondary)] hover:text-white inline-flex items-center justify-center transition-all">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="px-6 py-8 text-center text-[var(--text-secondary)]">
+                                    No orders found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="space-y-8">
+        
+        <!-- Pending Actions -->
+        @if (pendingCount > 0)
+        {
+            <div class="glass rounded-3xl border border-amber-500/30 overflow-hidden relative">
+                <div class="absolute inset-0 bg-amber-500/5 z-0"></div>
+                <div class="p-6 relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                         <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500">
+                             <i class="bi bi-clock-history text-2xl"></i>
+                         </div>
+                         <span class="bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded-md">Action Required</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">@pendingCount items need approval</h3>
+                    <p class="text-sm text-[var(--text-secondary)] mb-6">Artists have submitted new works that require your review before going live.</p>
+                    
+                    <a asp-action="Approvals" class="w-full block text-center py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition-colors">
+                        Review Now
+                    </a>
+                </div>
+            </div>
+        }
+
+        <!-- Quick Actions -->
+        <div class="glass rounded-3xl border border-[var(--glass-border)] p-6">
+            <h3 class="font-bold text-lg text-white mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <a asp-action="AddProduct" class="p-4 rounded-xl bg-[var(--bg-surface-2)] hover:bg-[var(--bg-primary)] border border-[var(--glass-border)] hover:border-[var(--primary-color)] transition-all group text-center block">
+                    <i class="bi bi-plus-lg text-xl mb-2 block text-[var(--primary-color)] group-hover:scale-110 transition-transform"></i>
+                    <span class="text-xs font-bold text-[var(--text-secondary)] group-hover:text-white">New Artwork</span>
+                </a>
+                <a asp-action="AddUser" class="p-4 rounded-xl bg-[var(--bg-surface-2)] hover:bg-[var(--bg-primary)] border border-[var(--glass-border)] hover:border-[var(--primary-color)] transition-all group text-center block">
+                    <i class="bi bi-person-plus text-xl mb-2 block text-purple-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-xs font-bold text-[var(--text-secondary)] group-hover:text-white">Add User</span>
+                </a>
+                 <a asp-action="AddExhibition" class="p-4 rounded-xl bg-[var(--bg-surface-2)] hover:bg-[var(--bg-primary)] border border-[var(--glass-border)] hover:border-[var(--primary-color)] transition-all group text-center block">
+                    <i class="bi bi-calendar-plus text-xl mb-2 block text-pink-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-xs font-bold text-[var(--text-secondary)] group-hover:text-white">New Event</span>
+                </a>
+                <a asp-action="Feedbacks" class="p-4 rounded-xl bg-[var(--bg-surface-2)] hover:bg-[var(--bg-primary)] border border-[var(--glass-border)] hover:border-[var(--primary-color)] transition-all group text-center block">
+                    <i class="bi bi-chat-dots text-xl mb-2 block text-blue-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-xs font-bold text-[var(--text-secondary)] group-hover:text-white">Check Inbox</span>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>

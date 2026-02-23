@@ -1,0 +1,499 @@
+@model Project.Models.User
+@{
+    ViewData["Title"] = "Account Settings";
+
+
+    var rawTheme = Model.Theme ?? "";
+    var defAccent = "#3b82f6";
+    var defBg = "#05060a";
+    
+    if (rawTheme.StartsWith("custom|"))
+    {
+        var parts = rawTheme.Split('|');
+        if (parts.Length >= 4)
+        {
+            defAccent = parts[1];
+
+            defBg = parts[3];
+        }
+    }
+}
+
+<div class="pt-32 pb-20 px-6 max-w-7xl mx-auto animate-fade-in">
+    <div class="flex flex-col lg:flex-row gap-12 items-stretch">
+        
+        <!-- Sidebar - Tab logic is now instant -->
+        <partial name="_SettingsSidebar" />
+
+        <div class="flex-1 w-full max-w-2xl mx-auto">
+            <div class="glass p-8 md:p-12">
+                
+                <form asp-action="Settings" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="activeTab" id="activeTabInput" value="avatar" />
+                    
+                    <!-- Section: Avatar -->
+                    <div id="section-avatar" class="block space-y-8">
+                        <div class="border-b border-[var(--glass-border)] pb-8">
+                            <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Avatar <span class="text-[var(--primary-color)]">Sanctuary</span></h1>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Customize your digital presence.</p>
+                        </div>
+                        
+                        <div class="flex flex-col items-center py-8">
+                            <div class="relative group">
+                                <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl relative">
+                                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                                    {
+                                        <img id="avatarPreview" src="@Model.Avatar" class="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                    }
+                                    else
+                                    {
+                                        <div id="avatarPlaceholder" class="w-full h-full bg-primary flex items-center justify-center text-6xl font-bold text-white">
+                                            @Model.Name[0].ToString().ToUpper()
+                                        </div>
+                                        <img id="avatarPreview" src="#" class="w-full h-full object-cover hidden transition-transform group-hover:scale-110" />
+                                    }
+                                </div>
+                                <label for="avatarFile" class="absolute bottom-2 right-2 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-xl hover:scale-110 transition-transform focus-within:ring-2 focus-within:ring-white border-4 border-[var(--bg-card)]">
+                                    <i class="bi bi-camera-fill text-xl"></i>
+                                    <input type="file" id="avatarFile" name="avatarFile" class="sr-only" accept="image/*" onchange="previewImage(this)">
+                                </label>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-6 uppercase tracking-[0.3em] font-black">Dimensions: 400x400 PX</p>
+                        </div>
+                        
+                        <div class="pt-6">
+                            <button type="submit" class="w-full flex items-center justify-center btn-premium py-4 text-lg shadow-2xl shadow-primary/20">
+                                Update Avatar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section: User Info -->
+                    <div id="section-info" class="hidden space-y-8">
+                         <div class="border-b border-[var(--glass-border)] pb-8">
+                            <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Identity <span class="text-[var(--primary-color)]">Log</span></h1>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Manage your core transmission details.</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 block">Display Name</label>
+                                <input type="text" name="name" value="@Model.Name" 
+                                       class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-white focus:border-primary outline-none transition-all font-bold tracking-tight" 
+                                       required />
+                            </div>
+                            
+                            <div>
+                                <label class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-2 block">Email Transmission</label>
+                                <div class="relative">
+                                    <input type="email" value="@Model.Email" disabled 
+                                           class="w-full bg-[var(--bg-surface-1)]/50 border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-slate-500 cursor-not-allowed outline-none font-bold tracking-tight" />
+                                    <i class="bi bi-lock-fill absolute right-5 top-1/2 -translate-y-1/2 text-slate-600"></i>
+                                </div>
+                                <p class="text-[10px] text-slate-600 mt-3 italic font-bold">Email is linked to your secure authentication oracle.</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <button type="submit" class="w-full flex items-center justify-center btn-premium py-4 text-lg shadow-2xl shadow-primary/20">
+                                Save Identifiers
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- Section: Password -->
+                <div id="section-password" class="hidden space-y-8">
+                    <div class="border-b border-[var(--glass-border)] pb-8">
+                        <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Security <span class="text-[var(--primary-color)]">Vault</span></h1>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Protect your digital sanctuary.</p>
+                    </div>
+
+                    <div class="bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-[2rem] p-8">
+                        @if (string.IsNullOrEmpty(Model.Password))
+                        {
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-black text-white mb-1 uppercase tracking-tight">Set Local Password</p>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">Enable direct encrypted access.</p>
+                                </div>
+                                <a asp-action="ChangePassword" class="btn-premium py-2 px-8 text-[11px]">
+                                    Initialize
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-black text-white mb-1 uppercase tracking-tight">Access Key</p>
+                                    <p class="text-xs text-slate-400 font-mono tracking-widest">••••••••••••••••</p>
+                                </div>
+                                <a asp-action="ChangePassword" class="glass px-8 py-2 text-[11px] font-black uppercase hover:bg-white/5 transition-all rounded-xl">
+                                    Rotate
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Section: 2FA -->
+                <div id="section-2fa" class="hidden space-y-8">
+                     <div class="border-b border-[var(--glass-border)] pb-8">
+                        <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Biometric <span class="text-[var(--primary-color)]">Shield</span></h1>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Two-factor neural verification.</p>
+                    </div>
+
+                    <div class="bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-[2rem] p-8">
+                        @if (Model.IsTwoFactorEnabled)
+                        {
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-black text-green-400 mb-1 uppercase tracking-tight"><i class="bi bi-shield-check mr-2"></i>Active</p>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">Shielding your account from infiltration.</p>
+                                </div>
+                                <form asp-action="DisableTwoFactor" method="post" onsubmit="return confirm('Disable biometric shield?');">
+                                    <button type="submit" class="border border-red-500/30 text-red-400 bg-red-500/10 hover:bg-red-500/20 px-8 py-2 rounded-xl text-[11px] font-black uppercase transition-all">
+                                        Deactivate
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-black text-white mb-1 uppercase tracking-tight">Shield Inactive</p>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">Vulnerable to external interference.</p>
+                                </div>
+                                <a asp-action="EnableTwoFactor" class="btn-premium py-2 px-8 text-[11px]">
+                                    Deploy
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Section: Themes -->
+                <div id="section-themes" class="hidden space-y-8">
+                    <div class="border-b border-[var(--glass-border)] pb-8">
+                        <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Visual <span class="text-[var(--primary-color)]">Synthesis</span></h1>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Synchronize your sanctuary aesthetic.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-y-8 gap-x-4">
+                        @{
+                            void RenderTheme(string id, string name, string c1, string c2)
+                            {
+                                var isActive = Model.Theme == id;
+                                var borderClass = isActive ? "border-primary" : "border-transparent";
+                                var opacityClass = isActive ? "opacity-100" : "opacity-0";
+                                
+                                <div class="theme-option group cursor-pointer flex flex-col items-center gap-3 transition-all p-2 rounded-3xl hover:bg-white/5 border-2 @borderClass"
+                                        onclick="selectTheme('@id')">
+                                    <div class="w-16 h-16 rounded-full shadow-2xl relative overflow-hidden"
+                                            style="background: linear-gradient(135deg, @c1, @c2);">
+                                        <i class="bi bi-check-lg text-white @opacityClass active-check text-2xl font-bold flex items-center justify-center h-full"></i>
+                                    </div>
+                                    <span class="text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-widest text-center">@name</span>
+                                </div>
+                            }
+                        }
+
+                        @{ RenderTheme("dark", "Classic", "#05060a", "#3b82f6"); }
+                        @{ RenderTheme("midnight", "Midnight", "#0f172a", "#8b5cf6"); }
+                        @{ RenderTheme("emerald", "Forest", "#064e3b", "#10b981"); }
+                        @{ RenderTheme("ocean", "Ocean", "#083344", "#06b6d4"); }
+                        @{ RenderTheme("ruby", "Crimson", "#1a0505", "#ef4444"); }
+                        @{ RenderTheme("amber", "Gold", "#1c1002", "#f59e0b"); }
+                        @{ RenderTheme("rose", "Rose", "#1f0510", "#f43f5e"); }
+                        @{ RenderTheme("violet", "Violet", "#170426", "#8b5cf6"); }
+                        @{ RenderTheme("sunset", "Sunset", "#1f0f08", "#f97316"); }
+                        @{ RenderTheme("neon", "Neon", "#000000", "#a3e635"); }
+                        @{ RenderTheme("light", "Light", "#f8fafc", "#2563eb"); }
+
+                        <div class="theme-option group cursor-pointer flex flex-col items-center gap-3 transition-all p-2 rounded-3xl hover:bg-white/5 border-2 @(Model.Theme.StartsWith("custom") ? "border-primary" : "border-transparent")"
+                                onclick="openCustomModal()">
+                            <div class="w-16 h-16 rounded-full bg-slate-800/50 border-2 border-dashed border-slate-600 group-hover:border-primary transition-all flex items-center justify-center">
+                                <i class="bi bi-plus-lg text-2xl text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-widest text-center">Custom</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Cursor -->
+                <div id="section-cursor" class="hidden space-y-8">
+                     <div class="border-b border-[var(--glass-border)] pb-8">
+                        <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Neural <span class="text-[var(--primary-color)]">Pointer</span></h1>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Select your navigation interface style.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        @{
+                            void RenderCursor(string id, string name, string icon)
+                            {
+                                var isActive = Model.UseCustomCursor && Model.CursorStyle == id;
+                                var isSystem = id == "system";
+                                if(isSystem) isActive = !Model.UseCustomCursor;
+
+                                var borderClass = isActive ? "border-primary bg-primary/10" : "border-transparent hover:bg-white/5";
+                                var textClass = isActive ? "text-primary" : "text-slate-400 text-white/50";
+                                
+                                <div class="cursor-option group cursor-pointer flex flex-col items-center gap-3 p-5 rounded-[2rem] border-2 transition-all @borderClass"
+                                     onclick="selectCursor('@id')">
+                                    <div class="w-12 h-12 rounded-full bg-slate-800/50 flex items-center justify-center text-2xl @textClass">
+                                        <i class="@icon"></i>
+                                    </div>
+                                    <span class="text-[9px] font-black uppercase tracking-widest @textClass">@name</span>
+                                </div>
+                            }
+                        }
+
+                        @{ RenderCursor("system", "Windows", "bi bi-cursor-fill"); }
+                        @{ RenderCursor("eclipse", "Eclipse", "bi bi-circle"); }
+                        @{ RenderCursor("dot", "Simple Dot", "bi bi-dot"); }
+                        @{ RenderCursor("focus", "Focus", "bi bi-bounding-box"); }
+                        @{ RenderCursor("bubble", "Bubble", "bi bi-record-circle"); }
+                        @{ RenderCursor("diamond", "Diamond", "bi bi-diamond-fill"); }
+                    </div>
+                </div>
+
+                <!-- Section: Payment -->
+                <div id="section-payment" class="hidden space-y-8">
+                    <div class="border-b border-[var(--glass-border)] pb-8">
+                        <h1 class="text-4xl font-black tracking-tight mb-2 uppercase italic">Credit <span class="text-[var(--primary-color)]">Network</span></h1>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Synchronize your payment channels.</p>
+                    </div>
+
+                    <div class="bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-[2rem] p-8">
+                        @if (!string.IsNullOrEmpty(Model.CardNumber))
+                        {
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="w-14 h-9 bg-slate-700/50 rounded-lg flex items-center justify-center text-white font-black text-[9px] border border-white/5">
+                                        CARD
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-white mb-0 tracking-widest text-sm italic">•••• •••• •••• @Model.CardNumber.Substring(Model.CardNumber.Length - 4)</p>
+                                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-1">Exp: @Model.CardExpiry</p>
+                                    </div>
+                                </div>
+                                <button onclick="openCardModal()" class="text-primary text-[10px] font-black uppercase tracking-widest hover:underline">Revise</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-12">
+                                <div class="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500 border border-white/5">
+                                    <i class="bi bi-credit-card text-3xl"></i>
+                                </div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">No credit link established.</p>
+                                <button onclick="openCardModal()" class="btn-premium px-10 py-3 text-[11px]">Sync Card</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Custom Theme -->
+<div id="customModal" class="fixed inset-0 z-[200] hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" onclick="closeCustomModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6">
+        <div class="glass bg-[var(--bg-card)] rounded-[3rem] p-10 shadow-2xl">
+            <h3 class="text-3xl font-black mb-2 uppercase italic">Neural <span class="text-[var(--primary-color)]">Sync</span></h3>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-10">Construct your personal aesthetic nexus.</p>
+            
+            <div class="space-y-8">
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 block">Accent Core</label>
+                    <div class="flex items-center gap-5">
+                        <input type="color" id="customPrimary" class="w-14 h-14 rounded-2xl cursor-pointer bg-transparent border-0 p-0" value="@defAccent" oninput="updateFromPicker('Primary')">
+                        <input type="text" id="hexPrimary" class="flex-1 bg-[var(--bg-surface-1)] px-5 py-4 rounded-2xl border border-[var(--glass-border)] text-sm font-mono text-white focus:border-primary outline-none" value="@defAccent" oninput="updateFromText('Primary')">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 block">Base Frequency</label>
+                    <div class="flex items-center gap-5">
+                        <input type="color" id="customBackground" class="w-14 h-14 rounded-2xl cursor-pointer bg-transparent border-0 p-0" value="@defBg" oninput="updateFromPicker('Background')">
+                        <input type="text" id="hexBackground" class="flex-1 bg-[var(--bg-surface-1)] px-5 py-4 rounded-2xl border border-[var(--glass-border)] text-sm font-mono text-white focus:border-primary outline-none" value="@defBg" oninput="updateFromText('Background')">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-5 mt-12">
+                <button onclick="closeCustomModal()" class="px-8 py-4 rounded-2xl font-black text-[11px] uppercase text-slate-400 hover:text-white transition-colors">Discard</button>
+                <button onclick="applyCustomTheme()" class="btn-premium py-4">Sychronize</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Card -->
+<div id="addCardModal" class="fixed inset-0 z-[200] hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" onclick="closeCardModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6">
+        <div class="glass bg-[var(--bg-card)] rounded-[3rem] p-10 shadow-2xl relative">
+            <h3 class="text-3xl font-black mb-2 uppercase italic">Sync <span class="text-[var(--primary-color)]">Network</span></h3>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-10">Securely link your payment credentials.</p>
+            
+            <form id="addCardForm" onsubmit="saveCard(event)">
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Network Member</label>
+                        <input type="text" name="holder" required class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-white outline-none focus:border-primary font-bold" />
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Access Number</label>
+                        <input type="text" name="number" required pattern="\d{16}" placeholder="0000 0000 0000 0000" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-white outline-none focus:border-primary font-mono tracking-widest" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Cycle End</label>
+                            <input type="text" name="expiry" required placeholder="MM/YY" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-white outline-none focus:border-primary font-bold" />
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Security Token</label>
+                            <input type="text" name="cvc" required pattern="\d{3}" placeholder="123" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-white outline-none focus:border-primary font-bold" />
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="w-full btn-premium mt-10 py-4 uppercase">Authorize Link</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="useCustomCursor" value="@(Model.UseCustomCursor.ToString().ToLower())" />
+<input type="hidden" id="cursorStyle" value="@(Model.CursorStyle ?? "eclipse")" />
+<input type="hidden" id="selectedTheme" value="@Model.Theme" />
+
+@section Scripts {
+    <script>
+        window.switchTab = function(tab, instant = false) {
+            const tabs = ['avatar', 'info', 'password', '2fa', 'themes', 'cursor', 'payment'];
+            
+            // Sync hidden inputs for forms
+            const tabInput = document.getElementById('activeTabInput');
+            if (tabInput) tabInput.value = tab;
+
+            tabs.forEach(t => {
+                const el = document.getElementById('section-' + t);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('block', 'animate-fade-in');
+                }
+            });
+
+            const target = document.getElementById('section-' + tab);
+            if(target) {
+                target.classList.remove('hidden');
+                target.classList.add('block');
+                if (!instant) target.classList.add('animate-fade-in');
+            }
+
+            tabs.forEach(t => {
+                const btn = document.getElementById('nav-' + t);
+                if(btn) {
+                    btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20', 'font-bold');
+                    btn.classList.add('text-slate-400', 'hover:bg-white/5', 'hover:text-[var(--text-primary)]');
+                }
+            });
+
+            const active = document.getElementById('nav-' + tab);
+            if(active) {
+                active.classList.remove('text-slate-400', 'hover:bg-white/5', 'hover:text-[var(--text-primary)]');
+                active.classList.add('bg-primary/10', 'text-primary', 'border-primary/20', 'font-bold');
+            }
+
+            if (!instant && window.history.replaceState) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tab);
+                window.history.replaceState({}, '', url);
+            }
+        };
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const preview = document.getElementById('avatarPreview');
+                    const placeholder = document.getElementById('avatarPlaceholder');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    if (placeholder) placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function selectCursor(id) {
+            const isSystem = id === 'system';
+            document.getElementById('useCustomCursor').value = isSystem ? 'false' : 'true';
+            document.getElementById('cursorStyle').value = isSystem ? 'eclipse' : id;
+            updateCustomization();
+        }
+
+        function selectTheme(theme) {
+            document.getElementById('selectedTheme').value = theme;
+            updateCustomization();
+        }
+
+        function openCustomModal() { document.getElementById('customModal').classList.remove('hidden'); }
+        function closeCustomModal() { document.getElementById('customModal').classList.add('hidden'); }
+        function openCardModal() { document.getElementById('addCardModal').classList.remove('hidden'); }
+        function closeCardModal() { document.getElementById('addCardModal').classList.add('hidden'); }
+
+        function updateFromPicker(type) {
+            document.getElementById('hex' + type).value = document.getElementById('custom' + type).value;
+            updatePreview();
+        }
+
+        function updateFromText(type) {
+            const val = document.getElementById('hex' + type).value;
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                document.getElementById('custom' + type).value = val;
+                updatePreview();
+            }
+        }
+
+        function updatePreview() {
+            const p = document.getElementById('customPrimary').value;
+            const b = document.getElementById('customBackground').value;
+            const pb = document.getElementById('previewBg');
+            const pt = document.getElementById('previewText');
+            if (pb) pb.style.backgroundColor = b;
+            if (pt) pt.style.color = p;
+        }
+
+        function applyCustomTheme() {
+            const p = document.getElementById('customPrimary').value;
+            const b = document.getElementById('customBackground').value;
+            document.getElementById('selectedTheme').value = `custom|${p}|${p}|${b}`;
+            closeCustomModal();
+            updateCustomization();
+        }
+
+        function saveCard(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            fetch('/Home/SaveCard', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => data.success ? window.location.reload() : alert('Sync Failed'));
+        }
+
+        function updateCustomization() {
+            const formData = new FormData();
+            formData.append('theme', document.getElementById('selectedTheme').value || 'dark');
+            formData.append('useCustomCursor', document.getElementById('useCustomCursor').value);
+            formData.append('cursorStyle', document.getElementById('cursorStyle').value);
+            fetch('/Home/UpdateCustomization', { method: 'POST', body: formData }).then(() => window.location.reload());
+        }
+    </script>
+}

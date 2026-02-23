@@ -1,0 +1,73 @@
+@model List<Project.Models.Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <span class="text-primary font-bold tracking-widest uppercase text-xs">Purchase History</span>
+            <h1 class="text-5xl font-black mt-2">MY ORDERS</h1>
+        </div>
+        <div class="text-slate-500 font-mono">
+            Total Orders: @Model.Count
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="glass p-20 text-center animate-fade-in">
+            <div class="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="bi bi-bag-x text-4xl text-slate-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">No orders found yet</h3>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">Build your private collection today by exploring our curated gallery of masterpieces.</p>
+            <a asp-controller="Product" asp-action="Index" class="btn-premium px-8 py-3">Explore Gallery</a>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-6 animate-fade-in">
+            @foreach (var order in Model)
+            {
+                <div class="glass p-8 hover:bg-white/[0.02] transition-colors group">
+                    <div class="flex flex-col md:flex-row justify-between gap-8">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold tracking-tighter">ORDER #@order.Id</span>
+                                <span class="text-slate-500 text-sm">@order.OrderDate.ToString("MMM dd, yyyy • HH:mm")</span>
+                                <span class="ml-auto md:ml-0 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest @(order.Status == "Confirmed" ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500")">
+                                    @order.Status
+                                </span>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-8 items-center">
+                                <div>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Shipping To</p>
+                                    <p class="font-bold text-slate-300">@order.CustomerName</p>
+                                    <p class="text-xs text-slate-500 mt-1 max-w-[200px] truncate">@order.ShippingAddress</p>
+                                </div>
+                                
+                                <div class="hidden md:block w-px h-10 bg-[var(--glass-border)]"></div>
+                                
+                                <div>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Total Amount</p>
+                                    <p class="text-xl font-black text-primary font-mono">$@order.TotalAmount</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <a asp-action="OrderConfirmed" asp-route-id="@order.Id" class="px-6 py-3 rounded-xl border border-[var(--glass-border)] text-sm font-bold hover:bg-white/5 transition-colors">
+                                View Details
+                            </a>
+                            <a href="#" class="btn-premium px-6 py-3 text-sm flex items-center gap-2">
+                                <i class="bi bi-file-earmark-pdf"></i> Invoice
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

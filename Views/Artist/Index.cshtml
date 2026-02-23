@@ -1,0 +1,94 @@
+@model IEnumerable<Project.Models.Product>
+@{
+    ViewData["Title"] = "My Collection";
+    Layout = "_ArtistLayout";
+}
+
+<div class="max-w-7xl mx-auto px-2 md:px-0">
+    <!-- Hero Section -->
+    <div class="mb-10 md:mb-16 text-center">
+        <h1 class="font-display text-4xl md:text-7xl text-white mb-4 md:mb-6 tracking-wide drop-shadow-2xl">
+            My <span class="text-[var(--primary-color)] italic font-serif">Masterpieces</span>
+        </h1>
+        <p class="font-serif text-lg md:text-xl text-white/60 italic max-w-2xl mx-auto">
+            "Every artist dips his brush in his own soul, and paints his own nature into his pictures."
+        </p>
+    </div>
+
+    <!-- Stats Row w/ Artistic Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div class="relative group p-8 bg-white/5 border border-white/10 hover:border-[var(--primary-color)] transition-all duration-500 rounded-none transform hover:-translate-y-2">
+            <div class="absolute inset-0 bg-gradient-to-br from-[var(--primary-color)]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <h3 class="font-display text-4xl text-white mb-2 relative z-10">@ViewBag.TotalArtworks</h3>
+            <p class="font-serif text-white/50 uppercase tracking-widest text-sm relative z-10">Total Creations</p>
+            <i class="bi bi- easel absolute top-4 right-4 text-3xl text-white/10 group-hover:text-[var(--primary-color)] transition-colors"></i>
+        </div>
+
+        <div class="relative group p-8 bg-white/5 border border-white/10 hover:border-green-500/50 transition-all duration-500 rounded-none transform hover:-translate-y-2">
+            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <h3 class="font-display text-4xl text-green-400 mb-2 relative z-10">@ViewBag.ApprovedArtworks</h3>
+            <p class="font-serif text-white/50 uppercase tracking-widest text-sm relative z-10">Exhibited (Live)</p>
+            <i class="bi bi-check-circle absolute top-4 right-4 text-3xl text-white/10 group-hover:text-green-500 transition-colors"></i>
+        </div>
+
+        <div class="relative group p-8 bg-white/5 border border-white/10 hover:border-amber-500/50 transition-all duration-500 rounded-none transform hover:-translate-y-2">
+            <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <h3 class="font-display text-4xl text-amber-400 mb-2 relative z-10">@ViewBag.PendingArtworks</h3>
+            <p class="font-serif text-white/50 uppercase tracking-widest text-sm relative z-10">In Curating</p>
+            <i class="bi bi-hourglass-split absolute top-4 right-4 text-3xl text-white/10 group-hover:text-amber-500 transition-colors"></i>
+        </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+        @foreach (var art in Model)
+        {
+            <div class="break-inside-avoid relative group bg-black/40 border border-white/5 hover:border-white/20 transition-all duration-500 overflow-hidden">
+                <!-- Image with subtle zoom -->
+                <div class="relative overflow-hidden">
+                    <img src="@art.ImageUrl" class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 filter grayscale-[20%] group-hover:grayscale-0" alt="@art.Name" />
+                    
+                    <!-- Hover Overlay -->
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-4">
+                         <a asp-controller="Product" asp-action="Details" asp-route-id="@art.Id" class="px-6 py-2 border border-white text-white font-serif italic hover:bg-white hover:text-black transition-all">
+                            View Details
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@art.Id" onclick="return confirm('Destroy this masterpiece?')" class="text-red-400 font-sans text-xs uppercase tracking-widest hover:text-red-300 transition-colors flex items-center gap-2">
+                             <i class="bi bi-trash"></i> Destroy
+                        </a>
+                    </div>
+
+                    <!-- Status Tag -->
+                    <div class="absolute top-4 left-4">
+                        @if (art.IsApproved)
+                        {
+                            <span class="bg-black/50 backdrop-blur-md text-white border border-white/20 px-3 py-1 text-[10px] font-display tracking-widest uppercase">Live</span>
+                        }
+                        else
+                        {
+                            <span class="bg-amber-900/50 backdrop-blur-md text-amber-200 border border-amber-500/20 px-3 py-1 text-[10px] font-display tracking-widest uppercase">Pending</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Info Frame -->
+                <div class="p-6 text-center border-t border-white/5">
+                    <h3 class="font-display text-xl text-white mb-2">@art.Name</h3>
+                    <div class="w-8 h-px bg-[var(--primary-color)] mx-auto mb-3"></div>
+                    <p class="font-serif text-white/60 text-sm italic mb-4 line-clamp-2">"@art.Description"</p>
+                    <span class="font-sans text-[var(--primary-color)] font-bold tracking-wider">$@art.Price</span>
+                </div>
+            </div>
+        }
+
+        <!-- Add New Card -->
+        <div class="break-inside-avoid relative group bg-white/5 border-2 border-dashed border-white/10 hover:border-[var(--primary-color)] transition-all duration-300 min-h-[300px] flex flex-col items-center justify-center text-center cursor-pointer p-8">
+            <a asp-action="Upload" class="absolute inset-0 z-10"></a>
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <i class="bi bi-plus-lg text-3xl text-white/50 group-hover:text-[var(--primary-color)] transition-colors"></i>
+            </div>
+            <h3 class="font-display text-xl text-white mb-2">Create New</h3>
+            <p class="font-serif text-white/40 italic">Add a new legacy to your collection</p>
+        </div>
+    </div>
+</div>

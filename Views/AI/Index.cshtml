@@ -1,0 +1,358 @@
+@{
+    ViewData["Title"] = "AI Art Generator";
+}
+
+<div class="min-h-screen pt-24 pb-16 px-6 bg-[var(--bg-primary)] transition-colors duration-300">
+    <div class="max-w-6xl mx-auto">
+        
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-3 mb-4">
+                <i class="bi bi-magic text-5xl text-primary"></i>
+                <h1 class="text-5xl font-bold text-[var(--text-primary)]">
+                    AI Art Generator
+                </h1>
+            </div>
+            <p class="text-[var(--text-secondary)] text-lg">Transform your imagination into stunning artwork using advanced AI</p>
+        </div>
+
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            
+            <div class="glass p-8 border border-[var(--glass-border)] shadow-2xl">
+                <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                    <i class="bi bi-palette"></i>
+                    Create Your Art
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                            Describe your artwork
+                        </label>
+                        <textarea 
+                            id="promptInput" 
+                            class="w-full h-40 px-4 py-3 bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all"
+                            placeholder="Example: A majestic phoenix rising from vibrant flames, digital art style with neon colors and cosmic background..."
+                            maxlength="1000"></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-[var(--text-secondary)]">Max 1000 characters</span>
+                            <span id="charCount" class="text-xs text-[var(--text-secondary)]">0 / 1000</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button 
+                            id="generateBtn"
+                            onclick="generateArt()"
+                            class="flex-[2] btn-premium text-white font-bold py-4 px-6 shadow-lg shadow-primary/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                            <i class="bi bi-stars"></i>
+                            <span id="btnText">Generate Art</span>
+                        </button>
+                        <button 
+                            onclick="getRandomPrompt()"
+                            title="Surprise me with a random prompt!"
+                            class="flex-1 bg-[var(--bg-surface-1)] hover:bg-[var(--bg-surface-2)] text-[var(--text-primary)] font-bold py-4 px-4 rounded-xl border border-[var(--glass-border)] transition-all flex items-center justify-center gap-2">
+                            <i class="bi bi-shuffle"></i>
+                            <span class="hidden sm:inline">Surprise</span>
+                        </button>
+                    </div>
+
+                    <div id="errorMessage" class="hidden bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 text-sm"></div>
+                </div>
+            </div>
+
+            
+            <div class="glass p-8 border border-[var(--glass-border)] shadow-2xl">
+                <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                    <i class="bi bi-image"></i>
+                    Generated Artwork
+                </h2>
+
+                <div id="imageContainer" class="flex items-center justify-center min-h-[400px] bg-[var(--bg-surface-1)]/50 rounded-xl border border-[var(--glass-border)]">
+                    
+                    <div id="loadingState" class="hidden flex-col items-center gap-4">
+                        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-[var(--text-secondary)]">Creating your masterpiece...</p>
+                    </div>
+
+                    
+                    <div id="emptyState" class="flex flex-col items-center gap-4 text-[var(--text-secondary)]">
+                        <i class="bi bi-image text-6xl opacity-50"></i>
+                        <p class="text-center">Your generated artwork will appear here</p>
+                    </div>
+
+                    
+                    <div id="imageDisplay" class="hidden w-full">
+                        <img id="generatedImage" src="" alt="Generated Art" class="w-full rounded-lg shadow-xl">
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <button 
+                                onclick="downloadImage()"
+                                class="bg-[var(--bg-surface-1)] hover:bg-[var(--bg-surface-2)] text-[var(--text-primary)] py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 border border-[var(--glass-border)]">
+                                <i class="bi bi-download"></i>
+                                Download
+                            </button>
+                            <button 
+                                id="postBtn"
+                                onclick="postToSocial()"
+                                class="btn-premium text-white py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                                <i class="bi bi-send"></i>
+                                Post to Feed
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="glass p-8 border border-[var(--glass-border)] shadow-2xl">
+            <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <i class="bi bi-collection"></i>
+                Your personal Gallery
+            </h2>
+
+            <div id="galleryContainer" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                
+            </div>
+
+            <div id="emptyGallery" class="text-center py-12 text-[var(--text-secondary)]">
+                <i class="bi bi-images text-5xl mb-3 opacity-50"></i>
+                <p>Your generated artworks will appear here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const promptInput = document.getElementById('promptInput');
+        const charCount = document.getElementById('charCount');
+        
+        promptInput.addEventListener('input', function() {
+            charCount.textContent = this.value.length + ' / 1000';
+        });
+
+        const randomPrompts = [
+            "A surreal ocean made of liquid gold with floating clock towers",
+            "An ancient forest where the trees are made of stained glass",
+            "A futuristic city built inside a giant translucent jellyfish",
+            "A cosmic dancer made of nebulae and stardust, painting galaxies",
+            "Steampunk airships sailing through a sunset made of gears and pipes",
+            "A magical library where the books are flying like birds",
+            "Cyberpunk street market in the rain with neon reflections and holographic dragons",
+            "A majestic tree with leaves that are actually tiny glowing lanterns",
+            "Abstract portrait of a person whose thoughts are blooming flowers",
+            "A peaceful village carved into the side of a giant sleeping turtle",
+            "A cat wearing royal armor sitting on a throne of yarn",
+            "Floating islands with waterfalls that flow upwards into the clouds"
+        ];
+
+        function getRandomPrompt() {
+            const randomIndex = Math.floor(Math.random() * randomPrompts.length);
+            promptInput.value = randomPrompts[randomIndex];
+            promptInput.dispatchEvent(new Event('input'));
+        }
+
+        async function generateArt() {
+            let prompt = promptInput.value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const generateBtn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('btnText');
+            
+            if (!prompt) {
+                const randomIndex = Math.floor(Math.random() * randomPrompts.length);
+                prompt = randomPrompts[randomIndex];
+                promptInput.value = prompt;
+                promptInput.dispatchEvent(new Event('input'));
+            }
+
+            errorMessage.classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            
+            const imageDisplay = document.getElementById('imageDisplay');
+            imageDisplay.classList.add('hidden');
+            imageDisplay.style.display = 'none';
+
+            const loadingState = document.getElementById('loadingState');
+            loadingState.classList.remove('hidden');
+            loadingState.style.display = 'flex';
+            
+            generateBtn.disabled = true;
+            btnText.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/AI/GenerateImage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const generatedImg = document.getElementById('generatedImage');
+                    
+                    generatedImg.onload = function() {
+                        document.getElementById('loadingState').classList.add('hidden');
+                        document.getElementById('loadingState').style.display = 'none';
+                        document.getElementById('imageDisplay').classList.remove('hidden');
+                        document.getElementById('imageDisplay').style.display = 'block';
+                    };
+
+                    generatedImg.onerror = function() {
+                        showError('The AI server took too long. Please try again.');
+                        resetDisplay();
+                    };
+
+                    generatedImg.src = result.imageUrl;
+                    loadGallery();
+                    
+                    if (!result.dbSaved) {
+                        console.error('Failed to save to gallery:', result.dbError);
+                    }
+                } else {
+                    showError(result.error || 'Failed to generate image.');
+                    resetDisplay();
+                }
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+                resetDisplay();
+            } finally {
+                generateBtn.disabled = false;
+                btnText.textContent = 'Generate Art';
+            }
+        }
+
+        async function postToSocial() {
+            const img = document.getElementById('generatedImage');
+            const prompt = document.getElementById('promptInput').value;
+            const postBtn = document.getElementById('postBtn');
+            const originalContent = postBtn.innerHTML;
+
+            try {
+                postBtn.disabled = true;
+                postBtn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i> Posting...';
+
+                const response = await fetch('/Social/PostToSocial', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        imageUrl: img.src,
+                        caption: prompt
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    postBtn.innerHTML = '<i class="bi bi-check-all"></i> Posted!';
+                    postBtn.classList.replace('btn-premium', 'bg-green-600');
+                    setTimeout(() => {
+                        postBtn.innerHTML = originalContent;
+                        postBtn.classList.replace('bg-green-600', 'btn-premium');
+                        postBtn.disabled = false;
+                    }, 3000);
+                } else {
+                    alert(result.error);
+                    postBtn.innerHTML = originalContent;
+                    postBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                postBtn.innerHTML = originalContent;
+                postBtn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function resetDisplay() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('imageDisplay').classList.add('hidden');
+            document.getElementById('imageDisplay').style.display = 'none';
+            document.getElementById('emptyState').classList.remove('hidden');
+        }
+
+        async function downloadImage() {
+            const img = document.getElementById('generatedImage');
+            const downloadBtn = event.currentTarget;
+            const originalText = downloadBtn.innerHTML;
+            
+            try {
+                downloadBtn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i>...';
+                downloadBtn.disabled = true;
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ai-art-' + Date.now() + '.png';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                window.open(img.src, '_blank');
+            } finally {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const response = await fetch('/AI/GetGallery');
+                const gallery = await response.json();
+                const galleryContainer = document.getElementById('galleryContainer');
+                const emptyGallery = document.getElementById('emptyGallery');
+
+                if (gallery && gallery.length > 0) {
+                    emptyGallery.classList.add('hidden');
+                    galleryContainer.innerHTML = gallery.map(item => `
+                        <div class="group relative overflow-hidden rounded-lg cursor-pointer hover:scale-105 transition-all border border-[var(--glass-border)] shadow-lg">
+                            <img src="${item.imageUrl}" alt="${item.prompt}" class="w-full h-40 object-cover">
+                            <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-3 text-center">
+                                <p class="text-white text-[10px] line-clamp-3 mb-2">${item.prompt}</p>
+                                <button onclick="window.open('${item.imageUrl}', '_blank')" class="text-xs bg-primary/20 hover:bg-primary/40 text-primary-light px-2 py-1 rounded border border-primary/30 transition-colors flex items-center gap-1">
+                                    <i class="bi bi-box-arrow-up-right"></i> Open
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    emptyGallery.classList.remove('hidden');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function setPromptAndGenerate(prompt) {
+            promptInput.value = prompt;
+            promptInput.dispatchEvent(new Event('input'));
+            generateArt();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+            
+            // Handle remix prompt from social page
+            const remixPrompt = sessionStorage.getItem('remix_prompt');
+            if (remixPrompt) {
+                sessionStorage.removeItem('remix_prompt');
+                promptInput.value = remixPrompt;
+                promptInput.dispatchEvent(new Event('input'));
+                generateArt();
+            }
+        });
+
+        promptInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                generateArt();
+            }
+        });
+    </script>
+}

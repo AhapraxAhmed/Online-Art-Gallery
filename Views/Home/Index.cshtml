@@ -1,0 +1,322 @@
+@{
+    ViewData["Title"] = "Home";
+    var exhibitions = ViewBag.Exhibitions as List<Project.Models.Exhibition>;
+    var artworks = ViewBag.Artworks as List<Project.Models.Product>;
+}
+<div id="pageWrapper" class="transition-opacity duration-500 opacity-100">
+
+
+<style>
+    @@keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+        display: flex;
+        animation: marquee 20s linear infinite;
+        width: max-content;
+        will-change: transform;
+    }
+    /* Hide scrollbar for hero */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    @@keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 12s linear infinite;
+    }
+    .vertical-text {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+    }
+    @@keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+        will-change: transform;
+    }
+    @@keyframes scanline {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+    }
+    .animate-scanline {
+        animation: scanline 8s linear infinite;
+        will-change: transform;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="relative min-h-[90vh] flex items-center pt-12 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 z-0 bg-[var(--bg-primary)]" style="contain: paint;">
+         <!-- Subtle Grid Pattern -->
+         <div class="absolute inset-0 bg-[linear-gradient(to_right,#8080801a_1px,transparent_1px),linear-gradient(to_bottom,#8080801a_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none"></div>
+
+         <!-- Mesh Gradient Overlay -->
+         <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-blue-500/10 pointer-events-none"></div>
+
+         <!-- Very Subtle Static Blobs -->
+         <div class="absolute top-0 -left-20 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[80px] opacity-30 animate-blob pointer-events-none transform-gpu"></div>
+         <div class="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[80px] opacity-30 animate-blob animation-delay-2000 pointer-events-none transform-gpu"></div>
+         
+         <!-- Scanline Effect -->
+         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.015] to-transparent h-[100px] w-full animate-scanline pointer-events-none transform-gpu"></div>
+
+         <!-- Gradient Overlay for depth -->
+         <div class="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)]/0 via-[var(--bg-primary)]/40 to-[var(--bg-primary)] pointer-events-none"></div>
+    </div>
+
+    <!-- Content Group -->
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- Left: Text Content -->
+            <div class="space-y-10 animate-fade-in margin-bottom">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-[var(--primary-color)] animate-pulse"></span>
+                    <span class="text-[10px] uppercase font-bold tracking-[0.3em] text-white/70">The Future of Art is Here</span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="font-display text-6xl md:text-8xl font-black tracking-tighter text-white leading-[0.9] drop-shadow-2xl">
+                    ART BEYOND <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-color)] via-purple-400 to-[var(--secondary-color)]">BOUNDARIES.</span>
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="font-sans text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed">
+                    Where digital dreams manifest into timeless reality. Curating the future of artistic expression for the modern collector.
+                </p>
+                
+                <!-- Actions -->
+                <div class="flex flex-wrap gap-6 items-center">
+                    <a asp-controller="Product" asp-action="Index" class="btn-premium group !text-sm !px-10 !py-4 !rounded-full">
+                        Explore Gallery
+                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#featured" class="flex items-center gap-4 text-white/60 hover:text-white transition-all duration-500 group">
+                        <div class="relative w-12 h-12 rounded-full border border-white/10 flex items-center justify-center
+                bg-white/5 backdrop-blur-sm transition-all duration-500
+                group-hover:border-[var(--primary-color)]/50 group-hover:bg-[var(--primary-color)]/10
+                group-hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]">
+
+                            <i class="bi bi-eye text-lg transition-transform duration-500 group-hover:scale-110"></i>
+
+                            <div class="absolute inset-0 rounded-full border border-dashed border-white/0 group-hover:border-white/20 group-hover:animate-spin-slow"></div>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-500 group-hover:translate-x-1 group-hover:text-[var(--primary-color)]">
+                                The Vision
+                            </span>
+                            <div class="h-[1px] w-0 bg-gradient-to-r from-[var(--primary-color)] to-transparent transition-all duration-500 group-hover:w-full mt-1"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: 3D Element -->
+            <div class="hidden lg:block relative group">
+                <!-- Glow Effect -->
+                <div class="absolute -inset-4 bg-[var(--primary-color)]/20 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                
+                <div class="relative w-full aspect-[4/5] rounded-[48px] overflow-hidden border border-white/10 shadow-2xl z-10 bg-black">
+                    <img src="~/images/hero-3d.png" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" alt="3D Art Element" />
+                    <!-- Decorative Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                </div>
+                
+                <!-- Floating Decorative Circles -->
+                <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full border border-white/5 flex items-center justify-center animate-spin-slow z-20">
+                    <div class="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_15px_var(--primary-color)]"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-6 flex items-center gap-4 text-white/30">
+        <div class="w-px h-12 bg-gradient-to-b from-white/30 to-transparent"></div>
+        <span class="text-[10px] uppercase font-bold tracking-[0.3em] vertical-text">Scroll</span>
+    </div>
+</div>
+
+<!-- Marquee -->
+<div class="mt-20 py-6 bg-[var(--primary-color)] overflow-hidden border-y border-white/10">
+    <div class="animate-marquee flex gap-12 items-center">
+        @for(int i=0; i<6; i++) {
+            <div class="flex items-center gap-12">
+                <span class="text-black font-black text-4xl uppercase tracking-tighter">COLLECT • CREATE • INSPIRE</span>
+                <i class="bi bi-star-fill text-2xl text-black"></i>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Featured Artworks -->
+<section id="featured" class="py-24 px-4 relative bg-[var(--bg-surface-3)]">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div>
+                <span class="text-[var(--primary-color)] font-bold tracking-widest uppercase text-sm mb-2 block">Exclusive Drops</span>
+                <h2 class="text-4xl md:text-5xl font-black text-white">CURATED <span class="text-[var(--primary-color)]">MASTERPIECES</span></h2>
+            </div>
+            <a asp-controller="Product" asp-action="Index" class="text-[var(--text-secondary)] hover:text-white transition-colors text-sm font-bold uppercase tracking-widest border-b border-transparent hover:border-white pb-1">View Full Collection <i class="bi bi-arrow-right ml-2"></i></a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @if (artworks != null && artworks.Any())
+            {
+                @foreach (var art in artworks)
+                {
+                    <div class="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer shadow-2xl bg-black">
+                        <img src="@art.ImageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" loading="lazy" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        
+                        <div class="absolute bottom-0 left-0 w-full p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-2xl font-display text-white mb-1 truncate">@art.Name</h3>
+                            <p class="text-[var(--primary-color)] font-serif italic mb-4 text-sm">by @art.ArtistName</p>
+                            <div class="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 border-t border-white/10 pt-4">
+                                <span class="text-white font-bold text-lg">$@art.Price</span>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@art.Id" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-[var(--primary-color)] transition-colors hover:scale-110">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                 <div class="col-span-full py-20 text-center text-[var(--text-secondary)] glass rounded-2xl">
+                     <i class="bi bi-palette text-4xl mb-4 block opacity-50"></i>
+                     <p>Our curators are selecting the next masterpiece.</p>
+                 </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Exhibitions -->
+<section class="py-24 px-4 bg-[var(--bg-surface-1)] relative overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[var(--primary-color)]/5 to-transparent pointer-events-none"></div>
+    <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="text-center mb-16">
+            <span class="text-xs font-bold uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-4 block">Events & Shows</span>
+            <h2 class="text-4xl md:text-6xl font-black text-white">UPCOMING <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">EXHIBITIONS</span></h2>
+        </div>
+
+        <div class="space-y-6">
+            @if (exhibitions != null && exhibitions.Any())
+            {
+                @foreach (var ex in exhibitions)
+                {
+                    <div class="group relative glass p-8 md:p-12 hover:border-[var(--primary-color)] transition-all duration-500 overflow-hidden transform hover:-translate-y-1">
+                        <div class="absolute inset-0 bg-[var(--primary-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
+                            <div class="flex items-center gap-8 w-full md:w-auto">
+                                <div class="text-center md:text-left min-w-[80px]">
+                                    <span class="block text-5xl font-black text-white/10 group-hover:text-[var(--primary-color)] transition-colors duration-500">@ex.Date.Day</span>
+                                    <span class="block text-sm font-bold uppercase tracking-widest text-[var(--text-secondary)]">@ex.Date.ToString("MMM")</span>
+                                </div>
+                                <div class="h-16 w-px bg-white/10 hidden md:block"></div>
+                                <div class="text-center md:text-left">
+                                    <h3 class="text-2xl font-bold text-white mb-2 group-hover:translate-x-2 transition-transform duration-300">@ex.Title</h3>
+                                    <p class="text-[var(--text-secondary)] text-sm max-w-md line-clamp-2">@ex.Description</p>
+                                </div>
+                            </div>
+                            
+                            <a asp-controller="Social" asp-action="Index" class="btn-premium !text-xs !py-3 !px-6 w-full md:w-auto justify-center">
+                                Reserve Spot
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+             else
+            {
+                 <div class="py-20 text-center text-[var(--text-secondary)] glass rounded-2xl">
+                     <i class="bi bi-calendar-event text-4xl mb-4 block opacity-50"></i>
+                     <p>No upcoming exhibitions scheduled at the moment.</p>
+                 </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section-padding px-6 text-center bg-[var(--bg-primary)]">
+    <div class="max-w-4xl mx-auto glass p-16 md:p-28 rounded-[4rem] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-color)]/10 blur-[100px]"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-[var(--accent-color)]/10 blur-[100px]"></div>
+        
+        <h2 class="text-4xl md:text-6xl font-black mb-8 text-[var(--text-primary)] tracking-tight">JOIN THE ELITE CIRCLE<br/>OF COLLECTORS.</h2>
+        <p class="text-[var(--text-secondary)] text-lg mb-12 max-w-2xl mx-auto">Subscribe to our vanguard newsletter for exclusive drops, artist premieres, and private auction access.</p>
+        
+        <div class="flex flex-col md:flex-row gap-4 max-w-xl mx-auto relative z-10">
+            <input id="emailInput" type="email" placeholder="Your master email" class="form-control" />
+
+            <button onclick="subscribeUser()" class="btn-premium whitespace-nowrap">
+                Subscribe Now
+            </button>
+        </div>
+    </div>
+</section>
+</div>
+<div id="toast"
+     class="fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-24 opacity-0
+            w-[90%] max-w-md
+            bg-black text-white px-4 py-3 rounded-xl shadow-lg
+            text-center text-sm sm:text-base
+            transition-all duration-500 z-50">
+    🎨 We will update you on every new art piece
+</div>
+
+<script>
+    function subscribeUser() {
+        let email = document.getElementById("emailInput").value;
+        if (email === "") return;
+
+        let toast = document.getElementById("toast");
+
+        // show toast
+        toast.classList.remove("translate-y-24", "opacity-0");
+        toast.classList.add("translate-y-0", "opacity-100");
+
+        setTimeout(() => {
+
+            // hide toast
+            toast.classList.remove("translate-y-0", "opacity-100");
+            toast.classList.add("translate-y-24", "opacity-0");
+
+            // fade whole page
+            let page = document.getElementById("pageWrapper");
+            page.classList.remove("opacity-100");
+            page.classList.add("opacity-0");
+
+            // reload after fade
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+
+        }, 1200); // toast visible time
+    }
+</script>

@@ -1,0 +1,58 @@
+@model IEnumerable<Project.Models.User>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manage Users</h1>
+    <a asp-action="AddUser" class="btn-premium">Add New User</a>
+</div>
+
+<div class="glass p-4 animate-fade-in">
+    <table class="premium-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td data-label="ID">#@user.UserId</td>
+                    <td data-label="Name">
+                        <div class="d-flex align-items-center gap-2">
+                              <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">
+                                 @if (!string.IsNullOrEmpty(user.Avatar))
+                                 {
+                                     <img src="@user.Avatar" style="width: 100%; height: 100%; object-fit: cover;" alt="Avatar" />
+                                 }
+                                 else
+                                 {
+                                     <div style="width: 100%; height: 100%; background: var(--glass-border); display: flex; align-items: center; justify-content: center;">
+                                         @user.Name[0].ToString().ToUpper()
+                                     </div>
+                                 }
+                              </div>
+                             @user.Name
+                        </div>
+                    </td>
+                    <td data-label="Email">@user.Email</td>
+                    <td data-label="Role">
+                        <span class="badge @(user.Role == "Admin" ? "badge-admin" : "badge-user")">@user.Role</span>
+                    </td>
+                    <td data-label="Actions">
+                        <div class="d-flex gap-2">
+                            <a asp-action="EditUser" asp-route-id="@user.UserId" class="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all text-sm font-bold no-underline">Edit</a>
+                            <a asp-action="DeleteUser" asp-route-id="@user.UserId" class="px-3 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-sm font-bold no-underline" onclick="return confirm('Delete this user?');">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
