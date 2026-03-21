@@ -1,0 +1,72 @@
+@model IEnumerable<Project.Models.Product>
+@{
+    ViewData["Title"] = "Manage Artworks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manage Artworks</h1>
+    <a asp-action="AddProduct" class="btn-premium">Add New Artwork</a>
+</div>
+
+<div class="glass p-4 animate-fade-in">
+    <table class="premium-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Artist</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td data-label="Image">
+                        @if(!string.IsNullOrEmpty(item.ImageUrl)) {
+                            <img src="@item.ImageUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                        } else {
+                            <div style="width: 50px; height: 50px; background: var(--glass-border); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-image text-[var(--text-secondary)]"></i>
+                            </div>
+                        }
+                    </td>
+                    <td data-label="Name">
+                        #@item.Id <span style="font-weight: 600; margin-left: 10px;">@item.Name</span>
+                        @if(item.IsAuction) {
+                            <span class="ms-2 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase border border-amber-500/20">Auction</span>
+                        }
+                    </td>
+                    <td data-label="Description" class="text-[var(--text-secondary)]" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@item.Description</td>
+                    <td data-label="Artist">
+                        @{
+                            var artistName = (item.ArtistId != null) ? Model.FirstOrDefault()?.ArtistName ?? "Anonymous" : "Anonymous";
+                            // Wait, I should probably just fetch it or use a better way. 
+                            // Actually, I can use a subquery if I don't want to change the model/controller for this view.
+                            // But I already updated the model to have ArtistName [NotMapped].
+                        }
+                        @item.ArtistName
+                    </td>
+                    <td data-label="Price" style="color: var(--primary-color); font-family: monospace; font-size: 1.1rem;">
+                        @if(item.IsAuction && item.CurrentBid.HasValue) {
+                            <div class="flex flex-col">
+                                <span class="text-amber-500">$@item.CurrentBid</span>
+                                <span class="text-[10px] text-[var(--text-secondary)]">Start: $@item.Price</span>
+                            </div>
+                        } else {
+                            <span>$@item.Price</span>
+                        }
+                    </td>
+                    <td data-label="Actions">
+                        <div class="d-flex gap-2">
+                             <a asp-action="EditProduct" asp-route-id="@item.Id" class="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all text-sm font-bold no-underline">Edit</a>
+                             <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="px-3 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-sm font-bold no-underline" onclick="return confirm('Delete this artwork?');">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

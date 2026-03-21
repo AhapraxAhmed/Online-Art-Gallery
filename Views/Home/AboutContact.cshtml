@@ -1,0 +1,163 @@
+@{
+    ViewData["Title"] = "Our Legacy - Art Gallery";
+}
+
+<div class="relative">
+    <!-- Fixed Background Layer -->
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="/images/about-bg.png" class="w-full h-full object-cover opacity-60 fixed" alt="Background Texture" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
+    </div>
+
+    <div class="px-6 max-w-7xl mx-auto relative z-10">
+        
+        <!-- Hero Section -->
+        <section class="section-padding mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                <div class="animate-fade-in">
+                    <div class="flex items-center gap-4 mb-8">
+                        <span class="w-12 h-[1px] bg-[var(--primary-color)]"></span>
+                        <span class="text-[var(--primary-color)] font-bold tracking-[0.3em] uppercase text-[10px]">The Sanctuary Legacy</span>
+                    </div>
+                    <h1 class="premium-title mb-10">
+                        WHERE ART<br/>
+                        <span class="text-gradient">TRANSCENDS </span><br/>
+                        TIME.
+                    </h1>
+                    <div class="space-y-6">
+                        <p class="text-[var(--text-secondary)] text-xl leading-relaxed max-w-xl">
+                            Established in 2025, our sanctuary was conceived as a bridge between the visceral touch of traditional masterpieces and the boundless potential of the digital frontier.
+                        </p>
+                        <p class="text-[var(--text-muted)] text-lg leading-relaxed max-w-xl">
+                            We curate more than just images; we curate experiences. Every piece in our gallery is a chapter of a larger soul-story, hand-picked through a rigorous process of aesthetic and emotional validation.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-12 flex items-center gap-8">
+                        <div class="flex -space-x-4">
+                            <img src="https://i.pravatar.cc/150?u=1" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                            <img src="https://i.pravatar.cc/150?u=2" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                            <img src="https://i.pravatar.cc/150?u=3" class="w-12 h-12 rounded-full border-2 border-[var(--bg-primary)]" alt="Artist" />
+                        </div>
+                        <p class="text-xs font-bold text-[var(--text-secondary)] tracking-widest uppercase">Trusted by 500+ global artists</p>
+                    </div>
+                </div>
+
+                <div class="relative animate-fade-in group" style="animation-delay: 0.2s;">
+                    <div class="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative">
+                        <img src="/images/about-feature.png" class="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110" alt="Gallery Interior" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    
+                    <!-- Floating Stat Badge -->
+                    <div class="absolute -bottom-10 -right-10 p-10 glass rounded-[2.5rem] shadow-2xl animate-bounce-slow">
+                        <h4 class="text-4xl font-black text-white mb-1">12K+</h4>
+                        <p class="text-[10px] font-bold text-[var(--primary-color)] tracking-widest uppercase">Masterpieces Sold</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-8 border border-white/5 p-16 rounded-[4rem] bg-white/[0.02]">
+
+            <div class="text-center group">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">12K+</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Curated Artworks</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">500+</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Maestro Artists</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">99%</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Client Devotion</div>
+            </div>
+            <div class="text-center group border-l border-white/5">
+                <div class="text-5xl font-black text-white mb-3 group-hover:text-[var(--primary-color)] transition-colors">24/7</div>
+                <div class="text-[var(--text-muted)] uppercase text-[10px] font-bold tracking-[0.3em]">Concierge Service</div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-padding">
+            <div class="max-w-4xl mx-auto bg-white/[0.02] p-12 md:p-24 rounded-[4rem] border border-white/5 relative overflow-hidden">
+
+                <!-- Decor -->
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-[var(--primary-color)]/10 blur-[100px]"></div>
+
+                <div class="text-center mb-10 animate-fade-in">
+                    <span class="text-[var(--primary-color)] font-bold tracking-[0.4em] uppercase text-[10px]">Sanctuary Concierge</span>
+                    <h2 class="text-4xl md:text-6xl font-black mt-6 text-white tracking-tighter">LET'S CONNECT.</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-geo-alt text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">The Studio</h4>
+                        <p class="text-[var(--text-secondary)] text-xs leading-relaxed">Doesn't have a<br/>STUDIO</p>
+                    </div>
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-envelope text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">Direct Link</h4>
+                        <p class="text-[var(--text-secondary)] text-xs">art@gallery.com<br/>+1 (555) ART-SOUL</p>
+                    </div>
+                    <div class="p-10 glass text-center hover:bg-white/5 transition-all duration-300 group">
+                        <i class="bi bi-chat-dots text-3xl text-[var(--primary-color)] mb-6 block group-hover:scale-125 transition-transform"></i>
+                        <h4 class="font-black text-white text-xs tracking-widest uppercase mb-4">Social Hub</h4>
+                        <p class="text-[var(--text-secondary)] text-xs">@@gallery_sanctuary<br/>#ArtRevolution</p>
+                    </div>
+                </div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="mb-10 p-6 bg-red-500/10 border border-red-500/20 text-red-400 rounded-3xl text-sm font-bold flex items-center gap-4">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <form asp-action="PostFeedback" method="post" class="space-y-8 animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        @if (string.IsNullOrEmpty(Context.Session.GetString("Name")))
+                        {
+                            <div>
+                                <label class="label">Full Identity</label>
+                                <input type="text" name="FullName" required class="form-control" placeholder="E.g. Leonardo da Vinci" />
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        <label class="label">The Inquiry</label>
+                        <input type="text" name="Subject" required class="form-control" placeholder="Acquisition, Press or Partnership?" />
+                    </div>
+                    <div>
+                        <label class="label">Your Message</label>
+                        <textarea name="Message" required rows="6" class="form-control resize-none" placeholder="Speak your mind..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-premium w-full py-5 text-lg shadow-[0_20px_40px_-10px_rgba(var(--primary-rgb),0.5)]">Send Transmission</button>
+                    <p class="text-center text-[var(--text-muted)] text-[10px] font-bold tracking-widest uppercase opacity-50">Our curators typically respond within 24 earth hours.</p>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+    @@keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+    .animate-bounce-slow {
+        animation: bounce-slow 4s ease-in-out infinite;
+    }
+    .label {
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        margin-left: 24px;
+    }
+</style>

@@ -1,0 +1,43 @@
+@model Project.ViewModels.TwoFactorSetupViewModel
+@{
+    ViewData["Title"] = "Enable Two-Factor Authentication";
+}
+
+<div class="pt-32 pb-20 px-6 min-h-screen flex items-center justify-center">
+    <div class="glass p-8 md:p-12 w-full max-w-lg animate-fade-in">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black mb-2">Enable 2FA</h1>
+            <p class="text-slate-500">Scan the QR code with your authenticator app.</p>
+        </div>
+
+        <div class="flex justify-center mb-8">
+            <div class="bg-white p-4 rounded-xl">
+                <img src="@Model.QrCodeImage" alt="QR Code" class="w-48 h-48" />
+            </div>
+        </div>
+
+        <div class="text-center mb-8">
+            <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2">Manual Entry Code</p>
+            <p class="font-mono text-lg bg-surface-1 p-2 rounded selectable">@Model.Secret</p>
+        </div>
+
+        <form asp-action="EnableTwoFactor" method="post" class="space-y-6">
+            <input type="hidden" asp-for="Secret" />
+            
+            <div>
+                <label asp-for="Code" class="block text-sm font-bold text-slate-400 mb-2">Verification Code</label>
+                <input asp-for="Code" class="w-full bg-[var(--bg-surface-1)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-center text-2xl tracking-widest font-mono focus:border-primary outline-none transition-all" placeholder="000000" maxlength="6" />
+                <span asp-validation-for="Code" class="text-red-400 text-sm mt-1 block"></span>
+            </div>
+
+            <button type="submit" class="w-full btn-premium py-4 text-lg">Verify & Enable</button>
+            <div class="text-center">
+                 <a asp-action="Settings" class="text-sm text-slate-500 hover:text-white transition-colors">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

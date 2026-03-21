@@ -1,0 +1,38 @@
+@model Project.Models.User
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="glass p-5 animate-fade-in" style="max-width: 600px; margin: 0 auto;">
+    <h2 class="mb-4">Edit User</h2>
+    <form asp-action="EditUser" method="post">
+        <input type="hidden" asp-for="UserId" />
+        <div class="mb-3">
+            <label for="Name">Full Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="Email">Email Address</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="Password">Password</label>
+            <input asp-for="Password" type="text" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="mb-4">
+            <label for="Role">Role</label>
+            <select asp-for="Role" class="form-control">
+                <option value="User">User</option>
+                <option value="Artist">Artist</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a asp-action="Users" style="color: #ccc; align-self: center;">Cancel</a>
+            <button type="submit" class="btn-premium">Save Changes</button>
+        </div>
+    </form>
+</div>

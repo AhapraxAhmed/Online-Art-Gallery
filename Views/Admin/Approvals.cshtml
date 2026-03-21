@@ -1,0 +1,49 @@
+@model IEnumerable<Project.Models.Product>
+@{
+    ViewData["Title"] = "Artwork Approvals";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold">Pending Approvals</h1>
+    <p class="text-slate-500">Review and approve artworks submitted by artists.</p>
+</div>
+
+<div class="grid grid-cols-1 gap-6">
+    @foreach (var art in Model)
+    {
+        <div class="bg-[var(--bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--glass-border)] flex flex-col md:flex-row gap-8 items-center">
+            <div class="w-full md:w-48 aspect-square rounded-xl overflow-hidden shadow-md">
+                <img src="@art.ImageUrl" class="w-full h-full object-cover" alt="@art.Name" />
+            </div>
+            
+            <div class="flex-1">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-xl text-[var(--text-primary)]">@art.Name</h3>
+                        <p class="text-sm text-[var(--text-secondary)] mb-2">Price: <span class="text-primary font-bold">$@art.Price</span> | Type: @(art.IsAuction ? "Auction" : "Fixed")</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a asp-action="ApproveProduct" asp-route-id="@art.Id" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                            Approve
+                        </a>
+                        <a asp-action="DeleteProduct" asp-route-id="@art.Id" class="bg-red-50 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm font-bold transition-colors" onclick="return confirm('Reject and delete this artwork?')">
+                            Reject
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl text-slate-600 text-sm mt-2 italic">
+                    "@art.Description"
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+            <i class="bi bi-check-circle text-5xl text-slate-200 mb-4 block"></i>
+            <p class="text-slate-400">All submissions have been reviewed. Good job!</p>
+        </div>
+    }
+</div>

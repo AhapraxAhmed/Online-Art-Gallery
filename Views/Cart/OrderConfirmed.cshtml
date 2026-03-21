@@ -1,0 +1,98 @@
+@model Project.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmed";
+    var address = Model.ShippingAddress;
+    var name = Model.CustomerName;
+}
+
+<div class="pt-32 pb-20 px-6 max-w-5xl mx-auto text-center">
+    <div class="animate-fade-in">
+        @if (Model.Status == "Pending")
+        {
+            <div class="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-8 text-yellow-500 shadow-2xl">
+                <i class="bi bi-clock-history text-5xl"></i>
+            </div>
+            <h1 class="text-5xl font-black mb-4 uppercase tracking-tighter">Order Pending Confirmation</h1>
+            <p class="text-slate-400 text-xl mb-12 max-w-2xl mx-auto">
+                Hello <span class="text-white font-bold">@name</span>. Your order #@Model.Id has been received. 
+                <span class="text-yellow-500 block mt-2">Please confirm your selection to finalize the process.</span>
+            </p>
+        }
+        else
+        {
+            <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-8 text-green-500 shadow-2xl">
+                <i class="bi bi-check-all text-5xl"></i>
+            </div>
+            <h1 class="text-5xl font-black mb-4 uppercase tracking-tighter">Order Confirmed</h1>
+            <p class="text-slate-400 text-xl mb-12 max-w-2xl mx-auto">
+                Thank you, <span class="text-white font-bold">@name</span>. Your purchase (Order #@Model.Id) has been successfully verified. 
+                Detailed shipping information has been sent to your registered email.
+            </p>
+        }
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start text-left">
+            
+            <div class="glass p-8 bg-[#0f111a]">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                    <i class="bi bi-geo-alt text-primary"></i> Shipping Destination
+                </h3>
+                <div class="bg-[#1a1c2e] p-4 rounded-xl border border-[var(--glass-border)] mb-8">
+                    <p class="text-slate-300 font-medium">Recipient: @name</p>
+                    <p class="text-slate-500 text-sm mt-1">@address</p>
+                </div>
+                
+                <div class="rounded-2xl overflow-hidden border border-[var(--glass-border)] aspect-video shadow-2xl relative grayscale hover:grayscale-0 transition-all duration-700">
+                     <iframe 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0" 
+                        loading="lazy" 
+                        allowfullscreen 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&q=@Uri.EscapeDataString(address)">
+                    </iframe>
+                </div>
+                <p class="text-[10px] text-slate-600 mt-4 italic tracking-wider uppercase">Live tracking will be enabled once the artist dispatches the package.</p>
+            </div>
+
+            
+            <div class="space-y-6">
+                <div class="glass p-8 bg-[#0f111a]">
+                    <h3 class="text-xl font-bold mb-8">Shipment Progress</h3>
+                    <div class="relative pl-8 border-l border-[var(--glass-border)] space-y-12">
+                        <div class="relative">
+                            <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full @(Model.Status == "Confirmed" ? "bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" : "bg-yellow-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]")"></div>
+                            <p class="font-bold text-white">@(Model.Status == "Confirmed" ? "Order Verified" : "Order Received")</p>
+                            <p class="text-sm text-slate-500">@(Model.Status == "Confirmed" ? "Your order has been confirmed and payment processed." : "Your order is awaiting final confirmation.")</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-[#1a1c2e] border border-[var(--glass-border)]"></div>
+                            <p class="font-bold text-slate-400">Art Preparation</p>
+                            <p class="text-sm text-slate-600">The artwork is being authenticated and framed for shipment.</p>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    @if (Model.Status == "Pending")
+                    {
+                        <form asp-action="ConfirmOrder" asp-route-id="@Model.Id" method="post">
+                            <button type="submit" class="w-full btn-premium py-4 rounded-xl text-lg flex items-center justify-center gap-3">
+                                <i class="bi bi-shield-check"></i> Confirm Order Now
+                            </button>
+                        </form>
+                    }
+                    <div class="flex gap-4">
+                        <a asp-action="MyOrders" asp-controller="Cart" class="flex-1 bg-[#1a1c2e] border border-[var(--glass-border)] hover:bg-white/5 text-white font-bold py-4 rounded-xl transition-all text-center">
+                            View All Orders
+                        </a>
+                        <a asp-action="Index" asp-controller="Product" class="flex-1 @(Model.Status == "Pending" ? "bg-slate-800" : "btn-premium") py-4 rounded-xl text-center">
+                            View Gallery
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

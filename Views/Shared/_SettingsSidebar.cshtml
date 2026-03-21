@@ -1,0 +1,73 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+}
+
+<aside class="w-full lg:w-72 flex-shrink-0">
+    <div class="glass p-6 sticky top-32 space-y-2 animate-fade-in-left">
+        <!-- Personal Section -->
+        <div class="px-4 pb-2 mb-2 border-b border-[var(--glass-border)]">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Personal Info</p>
+        </div>
+        <a href="javascript:void(0)" onclick="switchTab('avatar')" id="nav-avatar" class="sidebar-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)]">
+            <i class="bi bi-person-bounding-box"></i> Avatar
+        </a>
+        <a href="javascript:void(0)" onclick="switchTab('info')" id="nav-info" class="sidebar-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)]">
+            <i class="bi bi-card-text"></i> User Info
+        </a>
+
+        <!-- Customization -->
+        <div class="px-4 pb-2 mb-2 mt-6 border-b border-[var(--glass-border)]">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">User Customization</p>
+        </div>
+        <a href="javascript:void(0)" onclick="switchTab('themes')" id="nav-themes" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)] transition-all">
+            <i class="bi bi-palette text-lg"></i> Themes
+        </a>
+        <a href="javascript:void(0)" onclick="switchTab('cursor')" id="nav-cursor" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)] transition-all">
+            <i class="bi bi-cursor text-lg"></i> Cursor
+        </a>
+
+        <!-- Billing -->
+        <div class="px-4 pb-2 mb-2 mt-6 border-b border-[var(--glass-border)]">
+             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Billing</p>
+        </div>
+        <a href="javascript:void(0)" onclick="switchTab('payment')" id="nav-payment" class="sidebar-nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)] transition-all">
+            <i class="bi bi-credit-card text-lg"></i> Payment Methods
+        </a>
+
+        <!-- Security -->
+        <div class="px-4 pb-2 mb-2 mt-6 border-b border-[var(--glass-border)]">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Security</p>
+        </div>
+        <a href="javascript:void(0)" onclick="switchTab('password')" id="nav-password" class="sidebar-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)]">
+            <i class="bi bi-shield-lock"></i> Password
+        </a>
+        <a href="javascript:void(0)" onclick="switchTab('2fa')" id="nav-2fa" class="sidebar-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left text-slate-400 hover:bg-white/5 hover:text-[var(--text-primary)]">
+            <i class="bi bi-shield-check"></i> Two-Factor Auth
+        </a>
+    </div>
+</aside>
+
+<script>
+    (function() {
+        const initTabs = () => {
+            const params = new URLSearchParams(window.location.search);
+            let currentTab = params.get('tab') || 'avatar';
+
+            // Poll for switchTab function availability
+            const poll = setInterval(() => {
+                if (typeof window.switchTab === 'function') {
+                    window.switchTab(currentTab, true); // true = instant
+                    clearInterval(poll);
+                }
+            }, 50);
+            
+            setTimeout(() => clearInterval(poll), 2000);
+        };
+
+        if (document.readyState === 'complete') initTabs();
+        else window.addEventListener('load', initTabs);
+        
+        // Immediate call for SPA transitions
+        initTabs();
+    })();
+</script>

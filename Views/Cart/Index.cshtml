@@ -1,0 +1,164 @@
+@model List<Project.Models.CartItem>
+@{
+    ViewData["Title"] = "Your Cart";
+}
+
+<div class="relative">
+    <!-- Fixed Background Layer (The "About Page" Style Fix) -->
+    <div class="fixed inset-0 -z-10 overflow-hidden bg-black">
+        <img src="/images/cart_bg.png" class="w-full h-full object-cover opacity-30 fixed" alt="Background Texture" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80"></div>
+    </div>
+
+    <div class="premium-container !bg-transparent" style="padding-top: 20px; align-items: flex-start; justify-content: flex-start;">
+        <div class="max-w-7xl mx-auto px-6 w-full animate-fade-in relative z-10">
+        <div class="flex flex-col md:flex-row gap-10 items-start">
+            
+            
+            <div class="@(Model.Any() ? "w-full md:w-2/3" : "w-full")">
+                @if (ViewBag.ActiveBids != null) 
+                {
+                    <div class="mb-3">
+                         <div class="flex items-center gap-3 mb-2">
+                            <h2 class="text-2xl font-black">Active Bids</h2>
+                            <span class="px-2 py-1 bg-amber-500/10 text-amber-500 text-xs font-bold rounded-lg border border-amber-500/20">Live</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            @foreach (var bid in ViewBag.ActiveBids)
+                            {
+                                <div class="cart-item-card border-amber-500/30">
+                                    <div class="cart-item-image bg-amber-500/5 flex items-center justify-center border border-amber-500/20 relative overflow-hidden">
+                                        @if(!string.IsNullOrEmpty(bid.Product.ImageUrl)) {
+                                            <img src="@bid.Product.ImageUrl" class="absolute inset-0 w-full h-full object-cover opacity-60" />
+                                        }
+                                        <i class="bi bi-hammer text-2xl text-amber-500 relative z-10"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                         <div class="flex justify-between items-start mb-1">
+                                            <h4 class="text-lg font-bold">@bid.Product.Name</h4>
+                                            <div class="text-amber-500 font-bold text-lg">Your Bid: $@bid.Amount</div>
+                                        </div>
+                                        <div class="flex justify-between items-center text-sm">
+                                            <div class="text-slate-500">
+                                                Current Highest: <span class="text-white font-bold">$@bid.Product.CurrentBid</span>
+                                                <span class="mx-2">•</span>
+                                                Ends: @bid.Product.AuctionEndTime?.ToString("MMM dd, HH:mm")
+                                            </div>
+                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@bid.Product.Id" target="_blank" class="text-primary font-bold hover:underline">
+                                                View Auction
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h1 class="text-4xl font-black mb-2">Shopping Bag</h1>
+                        <p class="text-slate-500">You have @Model.Sum(x => x.Quantity) items in your cart</p>
+                    </div>
+                    @if (Model.Any())
+                    {
+                        <a asp-action="ClearCart" class="text-danger flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity">
+                            <i class="bi bi-trash3"></i> Clear Entire Cart
+                        </a>
+                    }
+                </div>
+
+                @if (Model.Count == 0)
+                {
+                    <div class="empty-cart-state mb-5">
+                        <i class="bi bi-cart-x empty-cart-icon"></i>
+                        <h3 class="text-white text-2xl font-bold mb-4">Your bag is empty</h3>
+                        <p class="text-slate-400 mb-8 max-w-sm mx-auto">Explore our collection of masterpieces and add something that speaks to your soul.</p>
+                        <a asp-controller="Product" asp-action="Index" class="btn-premium">Browse Artworks</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="space-y-4">
+                        @foreach (var item in Model)
+                        {
+                            <div class="cart-item-card">
+                                @if(!string.IsNullOrEmpty(item.ImageUrl)) {
+                                    <img src="@item.ImageUrl" class="cart-item-image" alt="@item.Name" />
+                                } else {
+                                    <div class="cart-item-image bg-slate-900 flex items-center justify-center">
+                                        <i class="bi bi-image text-2xl opacity-20"></i>
+                                    </div>
+                                }
+                                
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="text-lg font-bold">@item.Name</h4>
+                                        <div class="text-primary font-bold text-lg">$@item.Total</div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <div class="text-slate-500">
+                                            $@item.Price <span class="mx-2">×</span> @item.Quantity
+                                        </div>
+                                        <a asp-action="RemoveFromCart" asp-route-id="@item.ProductId" class="text-slate-500 hover:text-danger transition-colors">
+                                            <i class="bi bi-x-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            
+            @if (Model.Any())
+            {
+                <div class="w-full md:w-1/3">
+                    <div class="cart-summary">
+                        <h3 class="text-xl font-bold mb-6">Order Summary</h3>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between text-slate-400">
+                                <span>Subtotal</span>
+                                <span>$@Model.Sum(x => x.Total)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-400">
+                                <span>Processing Fee</span>
+                                <span class="text-green-400">Free</span>
+                            </div>
+                            <div class="border-t border-[var(--glass-border)] pt-4 mt-4 flex justify-between items-end">
+                                <span class="font-bold text-lg">Total</span>
+                                <div class="text-right">
+                                    <div class="text-3xl font-black text-white">$@Model.Sum(x => x.Total)</div>
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Estimates include all taxes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <a asp-action="Checkout" class="btn-premium w-full text-center py-4 rounded-xl shadow-xl shadow-primary/20">
+                                Proceed to Checkout
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Login" asp-controller="Auth" class="btn-premium w-full flex flex-1 items-center justify-center text-center py-4 rounded-xl bg-slate-800 hover:bg-slate-700 shadow-none">
+                                Login to Checkout
+                            </a>
+                        }
+                        
+                        <div class="mt-6 flex items-center justify-center gap-4 text-[10px] text-slate-600 font-bold tracking-widest uppercase">
+                            <div class="flex items-center gap-1"><i class="bi bi-shield-lock"></i> Secure</div>
+                            <div class="flex items-center gap-1"><i class="bi bi-arrow-repeat"></i> Returns</div>
+                            <div class="flex items-center gap-1"><i class="bi bi-patch-check"></i> Quality</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+</div>

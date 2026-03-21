@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Global Artists - Art Gallery";
+}
+
+<div class="animate-fade-in w-full">
+    <div class="gallery-hero relative overflow-hidden rounded-none border-x-0 border-t-0 py-24 flex items-center justify-center text-center">
+        <div class="max-w-4xl px-6 relative z-10">
+            <span class="text-primary font-bold tracking-[0.4em] uppercase text-xs mb-4 block">The Creative Soul</span>
+            <h1 class="text-5xl md:text-8xl font-black mt-2 mb-8 tracking-tighter text-white leading-[0.9]">Meet Our<br/><span class="text-gradient">Visionaries</span></h1>
+            <p class="text-slate-300 leading-relaxed text-lg font-medium max-w-2xl mx-auto opacity-70">
+                A community of borderless creators pushing the boundaries of digital and traditional art.
+            </p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @foreach (var artist in ViewBag.Artists)
+            {
+                <div class="group relative bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 text-center transition-all duration-500 hover:border-primary/30 hover:bg-white/[0.02] transform hover:-translate-y-2">
+                    <div class="relative w-32 h-32 mx-auto mb-8">
+                        <div class="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/40 transition-colors"></div>
+                        <div class="relative w-full h-full rounded-full border-2 border-primary/20 p-1 overflow-hidden">
+                            @if (!string.IsNullOrEmpty(artist.Avatar))
+                            {
+                                <img src="@artist.Avatar" class="w-full h-full object-cover rounded-full" alt="@artist.Name" />
+                            }
+                            else
+                            {
+                                <div class="w-full h-full bg-primary/10 rounded-full flex items-center justify-center text-2xl font-bold text-primary">
+                                    @(artist.Name[0])
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tight">@artist.Name</h3>
+                    <p class="text-primary text-[10px] font-bold tracking-[0.3em] uppercase mb-6">Master Artist</p>
+                    
+                    <div class="flex items-center justify-center gap-4 text-slate-400 mb-8">
+                        <div class="flex flex-col items-center">
+                            <span class="text-white font-bold text-lg">@artist.ArtworkCount</span>
+                            <span class="text-[9px] uppercase tracking-widest font-black opacity-40">Works</span>
+                        </div>
+                        <div class="w-px h-8 bg-white/5"></div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-white font-bold text-lg">@(new Random().Next(10, 50))</span>
+                            <span class="text-[9px] uppercase tracking-widest font-black opacity-40">Series</span>
+                        </div>
+                    </div>
+
+                    <a href="/Product?searchString=@artist.Name" class="btn-premium w-full !py-3 !text-[10px] !rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        Explore Works
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

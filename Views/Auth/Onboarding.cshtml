@@ -1,0 +1,186 @@
+@model Project.Models.User
+@{
+    ViewData["Title"] = "Welcome - Art Gallery";
+    Layout = "_AuthLayout";
+}
+
+<div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div class="w-full max-w-[800px] transition-all duration-500">
+
+        <form asp-action="Onboarding" method="post" id="onboardingForm" class="relative">
+            <input type="hidden" name="Role" value="User" />
+
+            <div id="step-profile" class="space-y-6 sm:space-y-8 animate-fade-in">
+
+                <div class="text-center space-y-3">
+                    <div class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-widest backdrop-blur-md border border-primary/30">
+                        Final Step
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter drop-shadow-xl">
+                        WELCOME TO THE <span class="text-primary">GALLERY</span>
+                    </h1>
+                    <p class="text-slate-400 text-sm sm:text-base md:text-lg font-medium max-w-xl mx-auto px-4">
+                        Just a few final details to personalize your artistic journey.
+                    </p>
+                </div>
+
+                <div class="bg-black/40 backdrop-blur-3xl p-6 sm:p-10 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
+
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 rounded-full blur-[80px]"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 relative z-10">
+
+                        <div class="space-y-6">
+                            <div class="group/input">
+                                <label class="text-[10px] text-primary uppercase font-black tracking-widest mb-2 block opacity-80">Your Age</label>
+                                <div class="relative">
+                                    <input type="number" name="Age" id="ageInput" required min="13" max="100"
+                                           class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-xl text-white outline-none focus:border-primary/50 focus:bg-white/10 transition-all font-bold"
+                                           placeholder="24" />
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1">
+                                        <button type="button" onclick="stepAge(1)" class="p-1 hover:text-primary transition-colors"><i class="bi bi-chevron-up"></i></button>
+                                        <button type="button" onclick="stepAge(-1)" class="p-1 hover:text-primary transition-colors"><i class="bi bi-chevron-down"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group/input">
+                                <label class="text-[10px] text-primary uppercase font-black tracking-widest mb-2 block opacity-80">Gender Identity</label>
+                                <div class="flex gap-3">
+                                    <label class="flex-1 cursor-pointer">
+                                        <input type="radio" name="Sex" value="Male" class="sr-only peer" required>
+                                        <div class="h-12 flex items-center justify-center rounded-xl border border-white/10 
+                                                  text-white/60 text-sm font-bold text-center
+                                                  transition-all hover:bg-white/5
+                                                  peer-focus:ring-2 peer-focus:ring-primary
+                                                  peer-checked:border-primary peer-checked:bg-primary/20 peer-checked:text-white">
+                                            Male
+                                        </div>
+                                    </label>
+
+                                    <label class="flex-1 cursor-pointer">
+                                        <input type="radio" name="Sex" value="Female" class="sr-only peer">
+                                        <div class="h-12 flex items-center justify-center rounded-xl border border-white/10 
+                                                  text-white/60 text-sm font-bold text-center
+                                                  transition-all hover:bg-white/5
+                                                  peer-focus:ring-2 peer-focus:ring-primary
+                                                  peer-checked:border-primary peer-checked:bg-primary/20 peer-checked:text-white">
+                                            Female
+                                        </div>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-[10px] text-primary uppercase font-black tracking-widest block opacity-80">Interests</label>
+                                <button type="button" onclick="getAISuggestions()" id="suggestBtn" class="text-[9px] font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg border border-primary/20 hover:bg-primary/20 transition-all flex items-center gap-1">
+                                    <i class="bi bi-magic"></i> AI SUGGEST
+                                </button>
+                            </div>
+                            <div class="relative flex-grow min-h-[120px]">
+                                <textarea name="Interests" id="interestsInput" required
+                                          class="w-full h-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-primary/50 focus:bg-white/10 transition-all resize-none"
+                                          placeholder="E.g. Surrealism, Digital Sculpting..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 text-center">
+                        <button type="submit" class="group/btn relative inline-flex items-center justify-center px-10 py-4 font-bold text-base text-white transition-all duration-300 bg-primary rounded-xl hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                            <span class="relative z-10 flex items-center">
+                                ENTER THE GALLERY <i class="bi bi-arrow-right ml-2 group-hover/btn:translate-x-1 transition-transform"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Dynamic Background Adjustments */
+    #body-theme .fixed.inset-0 {
+        background: url('/images/onboarding_bg.png') no-repeat center center;
+        background-size: cover;
+    }
+
+        #body-theme .fixed.inset-0::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(var(--bg-rgb), 0.98) 100%);
+        }
+
+    /* Animation for smooth entrance */
+    .animate-fade-in {
+        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Input Chrome removal */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Responsive Textarea height for small screens */
+    @@media (max-width: 768px) {
+        textarea {
+            min-height: 100px;
+        }
+    }
+</style>
+
+<script>
+    function stepAge(delta) {
+        const input = document.getElementById('ageInput');
+        let val = parseInt(input.value) || 24;
+        val += delta;
+        if (val >= 13 && val <= 100) {
+            input.value = val;
+        }
+    }
+
+    async function getAISuggestions() {
+        const btn = document.getElementById('suggestBtn');
+        const textarea = document.getElementById('interestsInput');
+        const originalText = btn.innerHTML;
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i> THINKING...';
+            
+            const response = await fetch('/AI/GetInterestSuggestions');
+            const data = await response.json();
+
+            if (data.success) {
+                textarea.value = data.suggestions;
+                textarea.classList.add('ring-2', 'ring-primary/40');
+                setTimeout(() => textarea.classList.remove('ring-2', 'ring-primary/40'), 1000);
+            } else {
+                alert('Connection to AI failed. Please try again.');
+            }
+        } catch (err) {
+            console.error('AI Suggestion Error:', err);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+</script>

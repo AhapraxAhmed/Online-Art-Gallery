@@ -1,0 +1,4 @@
+@{
+    var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+    Layout = controller == "Admin" ? "_AdminLayout" : "_Layout";
+}
