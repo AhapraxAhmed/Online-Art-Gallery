@@ -60,4 +60,4 @@ A modern, full-featured web application for showcasing, selling, and discovering
 
 ---
 
-**© 2025 Art Gallery — Modern Art for Modern Collectors**
+**© 2026 Art Gallery — Modern Art for Modern Collectors**
